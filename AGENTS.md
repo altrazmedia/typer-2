@@ -13,6 +13,10 @@
 
 # Rules
 
+**Language**
+
+All user-facing UI text (labels, buttons, titles, descriptions, error messages, placeholders) must be written in Polish.
+
 **Code quality**
 
 Run ESLint to check for potential issues after every change

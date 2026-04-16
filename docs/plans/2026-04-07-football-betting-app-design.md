@@ -137,7 +137,7 @@ typer-2/
 │   ├── migrations/
 │   └── seed.ts                     # Dev/test data (admin user, group, tournament, games)
 ├── docker-compose.yml              # Local Postgres only (not used in production)
-├── middleware.ts                   # Route protection (Auth.js)
+├── proxy.ts                        # Route protection (Auth.js; Next.js 16)
 ├── tailwind.config.ts
 └── package.json
 ```
@@ -168,7 +168,7 @@ typer-2/
 ### Registration & Login
 - Users register with email + password; password stored as bcrypt hash
 - Auth.js Credentials provider validates credentials and issues a session cookie
-- `middleware.ts` protects all `/(app)/` routes — unauthenticated users are redirected to `/login`
+- `proxy.ts` protects app routes (e.g. `/dashboard`) — unauthenticated users are redirected to `/login`
 
 ### Add Member Flow
 1. Admin calls `POST /api/groups/[id]/members` with body `{ "email": "user@example.com" }`
@@ -261,6 +261,9 @@ Exposed as a Next.js Server Component (no separate API route needed) — data fe
 Execute the following phases in order. Each phase should be fully working before proceeding to the next.
 
 ### Phase 1 — Project Scaffold
+
+**Status**: Implemented.
+
 - Init Next.js 15 with TypeScript and App Router: `npx create-next-app@latest`
 - Install and configure: Tailwind CSS, shadcn/ui (init), Prisma, `@prisma/client`, `@auth/nextjs`, `bcryptjs`, `@types/bcryptjs`
 - Set up ESLint: ensure `eslint` and `eslint-config-next` are installed (included by `create-next-app`); extend the config in `eslint.config.mjs` with any project-specific rules (e.g. `@typescript-eslint` recommended rules); add `"lint": "next lint"` script to `package.json`; verify `npm run lint` passes on the fresh scaffold
@@ -272,16 +275,18 @@ Execute the following phases in order. Each phase should be fully working before
 - Verify: `prisma studio` opens against local DB; `prisma db seed` runs without error; all tables populated as expected
 
 ### Phase 2 — Auth
+
+**Status**: Implemented.
+
 - Implement Auth.js Credentials provider in `lib/auth.ts` with bcrypt password check
 - Create `/register` page: form → POST to create `User` → redirect to login
 - Create `/login` page: form → Auth.js `signIn` → redirect to dashboard
-- Add `middleware.ts` to protect `/(app)/` routes
+- Add `proxy.ts` (Next.js 16; replaces `middleware.ts`) to protect app routes such as `/dashboard`
 - Verify: can register, login, logout; protected routes redirect unauthenticated users
 
 ### Phase 3 — Groups & Members
 - Implement `POST /api/groups` and `PUT /api/groups/[id]` for creating and editing groups (creator becomes admin via `GroupMember.isAdmin = true` on create)
 - Implement `POST /api/groups/[id]/members`: admin-only; body `{ "email": "..." }` — looks up registered user, creates `GroupMember` (`isAdmin: false`); handle 404/409 as above
-- Optional UI: simple form for admins to add a member by email (calls the members endpoint)
 - Verify: registered user can be added to a group by email; non-members cannot access group data until added
 
 ### Phase 4 — Tournaments & Games (Admin)
