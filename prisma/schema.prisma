@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+
+  groupMembers  GroupMember[]
+  bets          Bet[]
+  createdGroups Group[]       @relation("GroupCreator")
+}
+
+model Group {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  createdBy String
+  creator   User     @relation("GroupCreator", fields: [createdBy], references: [id])
+
+  members     GroupMember[]
+  tournaments Tournament[]
+}
+
+model GroupMember {
+  id       String   @id @default(cuid())
+  groupId  String
+  userId   String
+  isAdmin  Boolean  @default(false)
+  joinedAt DateTime @default(now())
+
+  group Group @relation(fields: [groupId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@unique([groupId, userId])
+}
+
+model Tournament {
+  id        String   @id @default(cuid())
+  groupId   String
+  name      String
+  season    String?
+  createdAt DateTime @default(now())
+
+  group       Group        @relation(fields: [groupId], references: [id])
+  games       Game[]
+  scoringRule ScoringRule?
+}
+
+model ScoringRule {
+  id                   String @id @default(cuid())
+  tournamentId         String @unique
+  exactScorePoints     Int    @default(3)
+  correctOutcomePoints Int    @default(1)
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id])
+}
+
+model Game {
+  id           String   @id @default(cuid())
+  tournamentId String
+  homeTeam     String
+  awayTeam     String
+  kickoffAt    DateTime
+  homeScore    Int?
+  awayScore    Int?
+  createdAt    DateTime @default(now())
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id])
+  bets       Bet[]
+}
+
+model Bet {
+  id            String   @id @default(cuid())
+  gameId        String
+  userId        String
+  homeScore     Int
+  awayScore     Int
+  pointsAwarded Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  game Game @relation(fields: [gameId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([gameId, userId])
+}
