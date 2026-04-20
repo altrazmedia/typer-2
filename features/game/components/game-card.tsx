@@ -1,17 +1,10 @@
 import type { FC } from "react";
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { EditGameDialog } from "@/components/edit-game-dialog";
-import { EditScoreDialog } from "@/components/edit-score-dialog";
 
-interface GameRow {
-  id: string;
-  homeTeam: string;
-  awayTeam: string;
-  kickoffAt: Date;
-  homeScore: number | null;
-  awayScore: number | null;
-}
+import { EditGameDialog } from "@/features/game/components/edit-game-dialog";
+import { EditScoreDialog } from "@/features/game/components/edit-score-dialog";
+import type { GameRow } from "@/features/game/types";
 
 interface Props {
   game: GameRow;

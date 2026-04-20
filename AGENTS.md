@@ -37,3 +37,37 @@ export const NewComponent: React.FC = ({}) => {
 
 Any database schema changes should be added to /docs/database-schema.md file.
 
+# Project structure
+
+All feature-specific code lives under `features/<feature>/` — never inside `app/api/*`, never inside `components/*` (except `components/ui/` which is shadcn primitives), never inline in `app/(app)/*/page.tsx`.
+
+**Feature folder shape** (`features/<feature>/`):
+
+- `components/` — React components (server and client; the `"use client"` directive is the boundary, no subfolder split)
+- `server/` — server-only data access for server components; every file starts with `import "server-only"`
+- `api/` — API route handlers extracted from `app/api/*/route.ts`; every file starts with `import "server-only"`
+- `schema.ts` — request-body validators (the `parseCreateBody`-style functions)
+- `types.ts` — feature-local TypeScript types
+
+**Existing features**: `tournament`, `game`, `group`, `auth`. Add new ones as singular nouns (`bet`, `notification`, …).
+
+**Routing glue in `app/`**:
+
+- `app/**/page.tsx` is a thin shim: check auth, call `features/<feature>/server/*`, render `features/<feature>/components/*`.
+- `app/api/**/route.ts` is a wrapper only:
+
+    ```ts
+    import { createTournament } from "@/features/tournament/api/create-tournament";
+
+    export async function POST(req: Request) {
+      return createTournament(req);
+    }
+    ```
+
+**Import rules**:
+
+- No barrel `index.ts` files — import the specific file: `import { GameCard } from "@/features/game/components/game-card"`.
+- Cross-feature imports are allowed via `features/X/components/*` and `features/X/server/*`.
+- Shared authz helpers (`requireAuth`, `requireGroupAdmin`, `requireTournamentAdmin`) stay in `lib/api-utils.ts` — infra, not a feature.
+- `components/ui/` (shadcn) and `lib/` (`db.ts`, `auth.ts`, `utils.ts`, `datetime-local.ts`, `api-utils.ts`) are shared infra and never hold feature logic.
+

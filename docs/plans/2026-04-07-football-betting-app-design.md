@@ -89,55 +89,78 @@ Example local URL: `postgresql://postgres:postgres@localhost:5432/typer_dev`
 
 ## Application Structure
 
+All feature-specific code lives under `features/<feature>/`. `app/` is a thin routing/composition layer: `page.tsx` files check auth and delegate to a feature component; `route.ts` files are wrappers that call a feature's API handler. Shared infra (Prisma client, NextAuth config, shadcn primitives, authz helpers) stays in `lib/` and `components/ui/`.
+
 ```
 typer-2/
 ├── app/
 │   ├── (auth)/
-│   │   ├── login/                  # Login page
-│   │   └── register/               # Registration page
-│   ├── (app)/                      # Protected routes (require auth)
-│   │   ├── layout.tsx              # Shared nav, session provider
-│   │   ├── dashboard/              # Upcoming games + bet submission
-│   │   ├── tournaments/
-│   │   │   ├── page.tsx            # List all tournaments (+ "Add tournament" button for admins)
-│   │   │   └── [id]/
-│   │   │       ├── page.tsx        # Games list for a tournament (+ "Add game" button for admins)
-│   │   │       └── leaderboard/    # Tournament-specific leaderboard
-│   └── api/
-│       ├── auth/[...nextauth]/     # Auth.js handler
-│       ├── bets/                   # POST/PUT bet
+│   │   ├── layout.tsx
+│   │   ├── login/page.tsx              # shim → features/auth LoginForm
+│   │   └── register/page.tsx           # shim → features/auth RegisterForm
+│   ├── (app)/                          # Protected routes (require auth)
+│   │   ├── layout.tsx                  # Shared nav; imports SignOutButton from features/auth
+│   │   ├── dashboard/page.tsx          # Upcoming games + bet submission (shim)
+│   │   └── tournaments/
+│   │       ├── page.tsx                # shim → features/tournament TournamentsOverview
+│   │       └── [id]/
+│   │           ├── page.tsx            # shim → features/tournament TournamentDetail
+│   │           └── leaderboard/        # Tournament-specific leaderboard (shim)
+│   └── api/                            # Every route.ts is a thin wrapper
+│       ├── auth/[...nextauth]/         # Auth.js handler (infra, not a feature)
+│       ├── bets/                       # wrappers → features/bet/api/*
 │       ├── games/
-│       │   ├── route.ts            # POST create game (admin only)
+│       │   ├── route.ts                # → features/game/api/create-game
 │       │   └── [id]/
-│       │       ├── route.ts        # PUT update game (admin only)
-│       │       └── result/         # POST actual result (admin only)
+│       │       ├── route.ts            # → features/game/api/update-game
+│       │       └── result/route.ts     # → features/game/api/submit-result
 │       ├── tournaments/
-│       │   ├── route.ts            # POST create tournament (admin only)
-│       │   └── [id]/
-│       │       └── route.ts        # PUT update tournament (admin only)
-│       ├── groups/
-│       │   ├── route.ts            # POST create group (admin only)
-│       │   └── [id]/
-│       │       ├── route.ts        # PUT update group (admin only)
-│       │       └── members/
-│       │           └── route.ts    # POST add member by email (admin only)
+│       │   ├── route.ts                # → features/tournament/api/create-tournament
+│       │   └── [id]/route.ts           # → features/tournament/api/update-tournament
+│       └── groups/
+│           ├── route.ts                # → features/group/api/create-group
+│           └── [id]/
+│               ├── route.ts            # → features/group/api/update-group
+│               └── members/route.ts    # → features/group/api/add-member
+├── features/
+│   ├── tournament/
+│   │   ├── components/                 # TournamentCard, Create/EditTournamentDialog, TournamentsOverview, TournamentDetail
+│   │   ├── server/                     # list-tournaments-for-user, get-tournament-detail, leaderboard query
+│   │   ├── api/                        # create-tournament, update-tournament
+│   │   ├── schema.ts                   # request-body validators
+│   │   └── types.ts
+│   ├── game/
+│   │   ├── components/                 # GameCard, Create/Edit GameDialog, EditScoreDialog, ScoreInput
+│   │   ├── server/
+│   │   ├── api/                        # create-game, update-game, submit-result
+│   │   ├── scoring.ts                  # pure calculatePoints
+│   │   ├── schema.ts
+│   │   └── types.ts
+│   ├── group/
+│   │   ├── components/
+│   │   ├── server/
+│   │   ├── api/                        # create-group, update-group, add-member
+│   │   ├── schema.ts
+│   │   └── types.ts
+│   ├── auth/
+│   │   ├── components/                 # SignOutButton, LoginForm, RegisterForm
+│   │   └── server/                     # register-action
+│   ├── bet/                            # Phase 5: BetForm component + bet API handlers
+│   └── notification/                   # Phase 9–10: NotificationToggle + push/subscribe + cron handler
 ├── components/
-│   ├── ui/                         # shadcn/ui primitives
-│   ├── BetForm.tsx
-│   ├── GameCard.tsx
-│   ├── Leaderboard.tsx
-│   └── TournamentCard.tsx
+│   └── ui/                             # shadcn/ui primitives (shared)
 ├── lib/
-│   ├── auth.ts                     # Auth.js config
-│   ├── db.ts                       # Prisma client singleton
-│   ├── scoring.ts                  # Point calculation logic
+│   ├── api-utils.ts                    # requireAuth, requireGroupAdmin, requireTournamentAdmin
+│   ├── auth.ts                         # Auth.js config
+│   ├── db.ts                           # Prisma client singleton
+│   ├── datetime-local.ts
 │   └── utils.ts
 ├── prisma/
 │   ├── schema.prisma
 │   ├── migrations/
-│   └── seed.ts                     # Dev/test data (admin user, group, tournament, games)
-├── docker-compose.yml              # Local Postgres only (not used in production)
-├── proxy.ts                        # Route protection (Auth.js; Next.js 16)
+│   └── seed.ts                         # Dev/test data (admin user, group, tournament, games)
+├── docker-compose.yml                  # Local Postgres only (not used in production)
+├── proxy.ts                            # Route protection (Auth.js; Next.js 16)
 ├── tailwind.config.ts
 └── package.json
 ```

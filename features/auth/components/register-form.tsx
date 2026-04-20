@@ -15,7 +15,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { registerAction, type RegisterState } from "./action";
+import {
+  registerAction,
+  type RegisterState,
+} from "@/features/auth/server/register-action";
 
 const initialState: RegisterState | null = null;
 

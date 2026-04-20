@@ -1,0 +1,72 @@
+import type { FC } from "react";
+
+import { CreateGameDialog } from "@/features/game/components/create-game-dialog";
+import { GameCard } from "@/features/game/components/game-card";
+import { EditTournamentDialog } from "@/features/tournament/components/edit-tournament-dialog";
+import type { TournamentDetail } from "@/features/tournament/server/get-tournament-detail";
+
+interface Props {
+  detail: TournamentDetail;
+}
+
+export const TournamentDetailView: FC<Props> = ({ detail }) => {
+  const { tournament, isAdmin } = detail;
+  const exactPts = tournament.scoringRule?.exactScorePoints ?? 3;
+  const outcomePts = tournament.scoringRule?.correctOutcomePoints ?? 1;
+
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-2">
+          <p className="text-sm text-muted-foreground">{tournament.group.name}</p>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">
+            {tournament.name}
+          </h1>
+          {tournament.season ? (
+            <p className="text-muted-foreground">Sezon: {tournament.season}</p>
+          ) : null}
+          <p className="text-sm text-muted-foreground">
+            Punktacja: {exactPts} pkt za dokładny wynik, {outcomePts} pkt za trafiony wynik
+          </p>
+        </div>
+        {isAdmin ? (
+          <div className="flex flex-wrap gap-2">
+            <EditTournamentDialog
+              tournamentId={tournament.id}
+              initialName={tournament.name}
+              initialSeason={tournament.season}
+              initialExactScorePoints={exactPts}
+              initialCorrectOutcomePoints={outcomePts}
+            />
+            <CreateGameDialog tournamentId={tournament.id} />
+          </div>
+        ) : null}
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <h2 className="font-heading text-lg font-semibold">Mecze</h2>
+        {tournament.games.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Brak zaplanowanych meczów.</p>
+        ) : (
+          <ul className="flex flex-col gap-4">
+            {tournament.games.map((game) => (
+              <li key={game.id}>
+                <GameCard
+                  game={{
+                    id: game.id,
+                    homeTeam: game.homeTeam,
+                    awayTeam: game.awayTeam,
+                    kickoffAt: game.kickoffAt,
+                    homeScore: game.homeScore,
+                    awayScore: game.awayScore,
+                  }}
+                  isAdmin={isAdmin}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+};

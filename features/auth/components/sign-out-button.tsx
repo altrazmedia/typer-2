@@ -1,8 +1,7 @@
 import type { FC } from "react";
 
-import { signOut } from "@/lib/auth";
-
 import { Button } from "@/components/ui/button";
+import { signOut } from "@/lib/auth";
 
 export const SignOutButton: FC = () => {
   return (

@@ -12,7 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ScoreInput } from "@/components/score-input";
+
+import { ScoreInput } from "@/features/game/components/score-input";
 
 interface Props {
   gameId: string;
