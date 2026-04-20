@@ -1,4 +1,4 @@
-import type { GroupMember } from "@prisma/client";
+import type { GroupMember, Tournament } from "@prisma/client";
 import { NextResponse } from "next/server";
 import type { Session } from "next-auth";
 
@@ -36,4 +36,28 @@ export async function requireGroupAdmin(
   return prisma.groupMember.findFirst({
     where: { groupId, userId, isAdmin: true },
   });
+}
+
+export type TournamentAdminResult =
+  | { ok: true; tournament: Tournament; adminMembership: GroupMember }
+  | { ok: false; reason: "not_found" | "forbidden" };
+
+/**
+ * Ensures the tournament exists and the user is a group admin for its group.
+ */
+export async function requireTournamentAdmin(
+  tournamentId: string,
+  userId: string,
+): Promise<TournamentAdminResult> {
+  const tournament = await prisma.tournament.findUnique({
+    where: { id: tournamentId },
+  });
+  if (!tournament) {
+    return { ok: false, reason: "not_found" };
+  }
+  const adminMembership = await requireGroupAdmin(tournament.groupId, userId);
+  if (!adminMembership) {
+    return { ok: false, reason: "forbidden" };
+  }
+  return { ok: true, tournament, adminMembership };
 }

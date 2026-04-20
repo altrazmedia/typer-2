@@ -285,15 +285,21 @@ Execute the following phases in order. Each phase should be fully working before
 - Verify: can register, login, logout; protected routes redirect unauthenticated users
 
 ### Phase 3 — Groups & Members
+
+**Status**: Implemented.
+
 - Implement `POST /api/groups` and `PUT /api/groups/[id]` for creating and editing groups (creator becomes admin via `GroupMember.isAdmin = true` on create)
 - Implement `POST /api/groups/[id]/members`: admin-only; body `{ "email": "..." }` — looks up registered user, creates `GroupMember` (`isAdmin: false`); handle 404/409 as above
 - Verify: registered user can be added to a group by email; non-members cannot access group data until added
 
 ### Phase 4 — Tournaments & Games (Admin)
+
+**Status**: Implemented.
+
 - Implement `POST /api/tournaments` and `PUT /api/tournaments/[id]` for creating and editing tournaments (admin only)
 - Implement `POST /api/games` and `PUT /api/games/[id]` for adding and editing games (admin only)
 - On `/tournaments` page, show an "Add tournament" button visible only to admins — opens a modal/form that calls `POST /api/tournaments`
-- On `/tournaments/[id]` page, show an "Add game" button and per-game "Edit" controls visible only to admins
+- On `/tournaments/[id]` page, show an "Add game" button and per-game "Edit" controls visible only to admins - opens a modal to create/ edit game
 - Build result entry UI inline on the games list (admin-only controls) that calls `POST /api/games/[id]/result`
 - Verify: admin can create a full tournament with games; non-admin users do not see admin controls
 
