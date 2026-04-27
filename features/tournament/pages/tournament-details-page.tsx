@@ -3,14 +3,18 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 
 import { TournamentDetailView } from "@/features/tournament/components/tournament-detail";
+import { classifyGames } from "@/features/tournament/helpers/classify-games";
+import { parseTournamentGamesTab } from "@/features/tournament/helpers/parse-tournament-games-tab";
 import { getTournamentDetailForUser } from "@/features/tournament/server/get-tournament-detail";
 
 interface Props {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ tab?: string | string[] }>;
 }
 
-export async function TournamentDetailsPage({ params }: Props) {
+export async function TournamentDetailsPage({ params, searchParams }: Props) {
   const { id: tournamentId } = await params;
+  const { tab: tabParam } = await searchParams;
   const session = await auth();
   if (!session?.user?.id) {
     redirect("/login");
@@ -21,5 +25,18 @@ export async function TournamentDetailsPage({ params }: Props) {
     notFound();
   }
 
-  return <TournamentDetailView detail={detail} />;
+  const activeTab = parseTournamentGamesTab(tabParam);
+  const { upcoming: upcomingGames, finished: finishedGames } = classifyGames(
+    detail.tournament.games,
+    new Date(),
+  );
+
+  return (
+    <TournamentDetailView
+      detail={detail}
+      activeTab={activeTab}
+      finishedGames={finishedGames}
+      upcomingGames={upcomingGames}
+    />
+  );
 }
