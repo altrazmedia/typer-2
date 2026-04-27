@@ -18,6 +18,7 @@ vi.mock("next/navigation", () => ({
   useRouter: () => mockRouter,
   useSearchParams: () => new URLSearchParams(),
   usePathname: () => "/",
+  notFound: vi.fn(),
   redirect: vi.fn(),
 }));
 

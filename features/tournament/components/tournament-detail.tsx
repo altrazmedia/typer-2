@@ -1,15 +1,29 @@
 import type { FC } from "react";
+import { Suspense } from "react";
 
+import { EmptyContentMessage } from "@/components/ui/empty-content-message";
+import { TabNavigation } from "@/components/ui/tab-navigation";
 import { CreateGameDialog } from "@/features/game/components/create-game-dialog";
 import { GameCard } from "@/features/game/components/game-card";
 import { EditTournamentDialog } from "@/features/tournament/components/edit-tournament-dialog";
+import type { TournamentGamesTab } from "@/features/tournament/helpers/parse-tournament-games-tab";
 import type { TournamentDetail } from "@/features/tournament/server/get-tournament-detail";
 
+type TournamentGameRow = TournamentDetail["tournament"]["games"][number];
+
 interface Props {
+  activeTab: TournamentGamesTab;
   detail: TournamentDetail;
+  finishedGames: TournamentGameRow[];
+  upcomingGames: TournamentGameRow[];
 }
 
-export const TournamentDetailView: FC<Props> = ({ detail }) => {
+export const TournamentDetailView: FC<Props> = ({
+  activeTab,
+  detail,
+  finishedGames,
+  upcomingGames,
+}) => {
   const { tournament, isAdmin } = detail;
   const exactPts = tournament.scoringRule?.exactScorePoints ?? 3;
   const outcomePts = tournament.scoringRule?.correctOutcomePoints ?? 1;
@@ -45,11 +59,46 @@ export const TournamentDetailView: FC<Props> = ({ detail }) => {
 
       <div className="flex flex-col gap-4">
         <h2 className="font-heading text-lg font-semibold">Mecze</h2>
-        {tournament.games.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Brak zaplanowanych meczów.</p>
+        <Suspense
+          fallback={
+            <div className="inline-flex h-8 w-fit min-w-[200px] rounded-lg bg-muted p-[3px]" />
+          }
+        >
+          <TabNavigation
+            activeTab={activeTab}
+            tabs={[
+              { label: "Nadchodzące mecze", value: "upcoming" },
+              { label: "Zakończone mecze", value: "finished" },
+            ]}
+          />
+        </Suspense>
+        {activeTab === "upcoming" ? (
+          upcomingGames.length === 0 ? (
+            <EmptyContentMessage message="Brak nadchodzących meczów." />
+          ) : (
+            <ul className="flex flex-col gap-4">
+              {upcomingGames.map((game) => (
+                <li key={game.id}>
+                  <GameCard
+                    game={{
+                      id: game.id,
+                      homeTeam: game.homeTeam,
+                      awayTeam: game.awayTeam,
+                      kickoffAt: game.kickoffAt,
+                      homeScore: game.homeScore,
+                      awayScore: game.awayScore,
+                    }}
+                    isAdmin={isAdmin}
+                  />
+                </li>
+              ))}
+            </ul>
+          )
+        ) : finishedGames.length === 0 ? (
+          <EmptyContentMessage message="Brak zakończonych meczów." />
         ) : (
           <ul className="flex flex-col gap-4">
-            {tournament.games.map((game) => (
+            {finishedGames.map((game) => (
               <li key={game.id}>
                 <GameCard
                   game={{
