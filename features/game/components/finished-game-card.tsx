@@ -11,26 +11,14 @@ interface Props {
   isAdmin: boolean;
 }
 
-function formatKickoff(d: Date): string {
-  return new Date(d).toLocaleString("pl-PL", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
-
-export const GameCard: FC<Props> = ({ game, isAdmin }) => {
-  const hasResult = game.homeScore !== null && game.awayScore !== null;
-
+export const FinishedGameCard: FC<Props> = ({ game, isAdmin }) => {
   return (
     <Card>
       <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 space-y-0">
         <div className="space-y-1">
           <CardTitle className="text-base font-semibold">
-            {hasResult
-              ? `${game.homeTeam} ${game.homeScore} - ${game.awayScore} ${game.awayTeam}`
-              : `${game.homeTeam} - ${game.awayTeam}`}
+            {game.homeTeam} {game.homeScore} – {game.awayScore} {game.awayTeam}
           </CardTitle>
-          <p className="text-sm text-muted-foreground">{formatKickoff(game.kickoffAt)}</p>
         </div>
         {isAdmin ? (
           <div className="flex shrink-0 flex-wrap items-center gap-2">

@@ -4,7 +4,8 @@ import { Suspense } from "react";
 import { EmptyContentMessage } from "@/components/ui/empty-content-message";
 import { TabNavigation } from "@/components/ui/tab-navigation";
 import { CreateGameDialog } from "@/features/game/components/create-game-dialog";
-import { GameCard } from "@/features/game/components/game-card";
+import { FinishedGameCard } from "@/features/game/components/finished-game-card";
+import { UpcomingGameCard } from "@/features/game/components/upcoming-game-card";
 import { EditTournamentDialog } from "@/features/tournament/components/edit-tournament-dialog";
 import type { TournamentGamesTab } from "@/features/tournament/helpers/parse-tournament-games-tab";
 import type { TournamentDetail } from "@/features/tournament/server/get-tournament-detail";
@@ -79,7 +80,7 @@ export const TournamentDetailView: FC<Props> = ({
             <ul className="flex flex-col gap-4">
               {upcomingGames.map((game) => (
                 <li key={game.id}>
-                  <GameCard
+                  <UpcomingGameCard
                     game={{
                       id: game.id,
                       homeTeam: game.homeTeam,
@@ -100,7 +101,7 @@ export const TournamentDetailView: FC<Props> = ({
           <ul className="flex flex-col gap-4">
             {finishedGames.map((game) => (
               <li key={game.id}>
-                <GameCard
+                <FinishedGameCard
                   game={{
                     id: game.id,
                     homeTeam: game.homeTeam,
