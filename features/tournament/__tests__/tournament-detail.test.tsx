@@ -21,8 +21,16 @@ vi.mock("@/components/ui/tab-navigation", () => ({
   ),
 }));
 
-vi.mock("@/features/game/components/game-card", () => ({
-  GameCard: ({ game }: { game: { awayTeam: string; homeTeam: string; id: string } }) => (
+vi.mock("@/features/game/components/upcoming-game-card", () => ({
+  UpcomingGameCard: ({ game }: { game: { awayTeam: string; homeTeam: string; id: string } }) => (
+    <div data-testid={`game-${game.id}`}>
+      {game.homeTeam} — {game.awayTeam}
+    </div>
+  ),
+}));
+
+vi.mock("@/features/game/components/finished-game-card", () => ({
+  FinishedGameCard: ({ game }: { game: { awayTeam: string; homeTeam: string; id: string } }) => (
     <div data-testid={`game-${game.id}`}>
       {game.homeTeam} — {game.awayTeam}
     </div>
