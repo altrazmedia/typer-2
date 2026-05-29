@@ -13,7 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { ScoreInput } from "@/features/game/components/score-input";
+import { ScoreForm } from "@/features/game/components/score-form";
 
 interface Props {
   gameId: string;
@@ -108,16 +108,13 @@ export const EditScoreDialog: FC<Props> = ({
                 {error}
               </p>
             ) : null}
-            <ScoreInput
-              label="Gospodarze"
-              value={homeScore}
-              onChange={setHomeScore}
-              disabled={pending}
-            />
-            <ScoreInput
-              label="Goście"
-              value={awayScore}
-              onChange={setAwayScore}
+            <ScoreForm
+              homeTeam={homeTeam}
+              awayTeam={awayTeam}
+              homeScore={homeScore}
+              awayScore={awayScore}
+              onHomeChange={setHomeScore}
+              onAwayChange={setAwayScore}
               disabled={pending}
             />
             <DialogFooter className="gap-2 sm:justify-end">

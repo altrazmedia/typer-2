@@ -14,7 +14,15 @@ export async function getTournamentDetailForUser(
     where: { id: tournamentId },
     include: {
       scoringRule: true,
-      games: { orderBy: { kickoffAt: "asc" } },
+      games: {
+        orderBy: { kickoffAt: "asc" },
+        include: {
+          bets: {
+            where: { userId },
+            select: { homeScore: true, awayScore: true },
+          },
+        },
+      },
       group: true,
     },
   });

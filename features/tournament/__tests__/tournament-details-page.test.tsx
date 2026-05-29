@@ -116,7 +116,16 @@ describe("TournamentDetailsPage", () => {
       tournament: {
         ...tournament,
         group,
-        games: [pastGame, futureGame],
+        games: [
+          {
+            ...pastGame,
+            bets: [],
+          },
+          {
+            ...futureGame,
+            bets: [],
+          },
+        ],
         scoringRule: {
           id: "sr_1",
           tournamentId: tournament.id,
@@ -159,7 +168,16 @@ describe("TournamentDetailsPage", () => {
       tournament: {
         ...tournament,
         group,
-        games: [pastGame, futureGame],
+        games: [
+          {
+            ...pastGame,
+            bets: [],
+          },
+          {
+            ...futureGame,
+            bets: [],
+          },
+        ],
         scoringRule: {
           id: "sr_1",
           tournamentId: tournament.id,
