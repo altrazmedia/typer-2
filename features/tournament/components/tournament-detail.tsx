@@ -89,6 +89,7 @@ export const TournamentDetailView: FC<Props> = ({
                       homeScore: game.homeScore,
                       awayScore: game.awayScore,
                     }}
+                    userBet={game.bets?.[0] ?? null}
                     isAdmin={isAdmin}
                   />
                 </li>
