@@ -13,7 +13,6 @@ export async function getTournamentDetailForUser(
     const tournament = await prisma.tournament.findUnique({
         where: { id: tournamentId },
         include: {
-            scoringRule: true,
             games: {
                 orderBy: { kickoffAt: "asc" },
                 include: {

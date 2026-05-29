@@ -54,6 +54,8 @@ export function makeTournament(
         name: "Test Tournament",
         season: null,
         createdAt: now,
+        exactScorePoints: 3,
+        correctOutcomePoints: 1,
         ...overrides,
     };
 }

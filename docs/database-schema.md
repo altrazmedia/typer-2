@@ -51,24 +51,16 @@ model GroupMember {
 }
 
 model Tournament {
-  id           String        @id @default(cuid())
-  groupId      String
-  name         String        // e.g. "World Cup 2026"
-  season       String?       // e.g. "2026"
-  createdAt    DateTime      @default(now())
+  id                    String        @id @default(cuid())
+  groupId               String
+  name                  String        // e.g. "World Cup 2026"
+  season                String?       // e.g. "2026"
+  createdAt             DateTime      @default(now())
+  exactScorePoints      Int           @default(3)
+  correctOutcomePoints  Int           @default(1)
 
-  group        Group         @relation(fields: [groupId], references: [id])
-  games        Game[]
-  scoringRule  ScoringRule?
-}
-
-model ScoringRule {
-  id                    String     @id @default(cuid())
-  tournamentId          String     @unique
-  exactScorePoints      Int        @default(3)
-  correctOutcomePoints  Int        @default(1)
-
-  tournament            Tournament @relation(fields: [tournamentId], references: [id])
+  group                 Group         @relation(fields: [groupId], references: [id])
+  games                 Game[]
 }
 
 model Game {
@@ -126,7 +118,6 @@ erDiagram
     Group ||--o{ Tournament : "has"
 
     Tournament ||--o{ Game : "contains"
-    Tournament ||--|| ScoringRule : "has"
 
     Game ||--o{ Bet : "receives"
 ```
@@ -136,7 +127,7 @@ erDiagram
 | Constraint                         | Enforcement                                                                 |
 | ---------------------------------- | --------------------------------------------------------------------------- |
 | One bet per user per game          | `@@unique([gameId, userId])`                                                |
-| One scoring rule per tournament    | `@unique` on `ScoringRule.tournamentId`                                     |
+| Scoring points per tournament      | `exactScorePoints` / `correctOutcomePoints` on `Tournament` (defaults 3 / 1) |
 | Game scores are nullable           | `homeScore Int?` / `awayScore Int?` — null until result entered             |
 | Bet points are nullable            | `pointsAwarded Int?` — null until result calculated                         |
 | Push subscription endpoint unique  | `@unique` on `PushSubscription.endpoint` — prevents duplicate registrations |

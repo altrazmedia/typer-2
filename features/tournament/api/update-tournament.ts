@@ -58,56 +58,26 @@ export async function updateTournament(
         );
     }
 
-    const { tournament, scoringRule } = await prisma.$transaction(
-        async (tx) => {
-            const tournamentUpdate: { name?: string; season?: string | null } =
-                {};
-            if (parsed.name !== undefined) tournamentUpdate.name = parsed.name;
-            if (parsed.season !== undefined)
-                tournamentUpdate.season = parsed.season;
+    const data: {
+        name?: string;
+        season?: string | null;
+        exactScorePoints?: number;
+        correctOutcomePoints?: number;
+    } = {};
 
-            const updatedTournament =
-                Object.keys(tournamentUpdate).length > 0
-                    ? await tx.tournament.update({
-                          where: { id: tournamentId },
-                          data: tournamentUpdate,
-                      })
-                    : await tx.tournament.findUniqueOrThrow({
-                          where: { id: tournamentId },
-                      });
+    if (parsed.name !== undefined) data.name = parsed.name;
+    if (parsed.season !== undefined) data.season = parsed.season;
+    if (parsed.exactScorePoints !== undefined) {
+        data.exactScorePoints = parsed.exactScorePoints;
+    }
+    if (parsed.correctOutcomePoints !== undefined) {
+        data.correctOutcomePoints = parsed.correctOutcomePoints;
+    }
 
-            let scoringRule = await tx.scoringRule.findUnique({
-                where: { tournamentId },
-            });
+    const tournament = await prisma.tournament.update({
+        where: { id: tournamentId },
+        data,
+    });
 
-            if (
-                parsed.exactScorePoints !== undefined ||
-                parsed.correctOutcomePoints !== undefined
-            ) {
-                scoringRule = await tx.scoringRule.upsert({
-                    where: { tournamentId },
-                    create: {
-                        tournamentId,
-                        exactScorePoints: parsed.exactScorePoints ?? 3,
-                        correctOutcomePoints: parsed.correctOutcomePoints ?? 1,
-                    },
-                    update: {
-                        ...(parsed.exactScorePoints !== undefined
-                            ? { exactScorePoints: parsed.exactScorePoints }
-                            : {}),
-                        ...(parsed.correctOutcomePoints !== undefined
-                            ? {
-                                  correctOutcomePoints:
-                                      parsed.correctOutcomePoints,
-                              }
-                            : {}),
-                    },
-                });
-            }
-
-            return { tournament: updatedTournament, scoringRule };
-        },
-    );
-
-    return NextResponse.json({ tournament, scoringRule });
+    return NextResponse.json({ tournament });
 }

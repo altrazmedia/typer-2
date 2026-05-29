@@ -134,12 +134,6 @@ describe("TournamentDetailsPage", () => {
                         bets: [],
                     },
                 ],
-                scoringRule: {
-                    id: "sr_1",
-                    tournamentId: tournament.id,
-                    exactScorePoints: 3,
-                    correctOutcomePoints: 1,
-                },
             },
         } as Awaited<ReturnType<typeof getTournamentDetailForUser>>);
 
@@ -190,12 +184,6 @@ describe("TournamentDetailsPage", () => {
                         bets: [],
                     },
                 ],
-                scoringRule: {
-                    id: "sr_1",
-                    tournamentId: tournament.id,
-                    exactScorePoints: 3,
-                    correctOutcomePoints: 1,
-                },
             },
         } as Awaited<ReturnType<typeof getTournamentDetailForUser>>);
 
