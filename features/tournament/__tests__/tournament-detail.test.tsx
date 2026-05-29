@@ -68,12 +68,6 @@ function makeTournamentDetail(
         tournament: {
             ...tournament,
             group,
-            scoringRule: {
-                id: "sr_test",
-                tournamentId: tournament.id,
-                exactScorePoints: 3,
-                correctOutcomePoints: 1,
-            },
             games,
         },
     } as TournamentDetail;

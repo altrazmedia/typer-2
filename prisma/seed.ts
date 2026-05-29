@@ -40,14 +40,9 @@ async function main() {
             groupId: group.id,
             name: "World Cup 2026",
             season: "2026",
-            scoringRule: {
-                create: {
-                    exactScorePoints: 3,
-                    correctOutcomePoints: 1,
-                },
-            },
+            exactScorePoints: 3,
+            correctOutcomePoints: 1,
         },
-        include: { scoringRule: true },
     });
 
     const kickoff1 = new Date("2026-06-15T18:00:00.000Z");
@@ -81,7 +76,6 @@ async function main() {
         adminEmail: admin.email,
         groupId: group.id,
         tournamentId: tournament.id,
-        scoringRuleId: tournament.scoringRule?.id,
     });
 }
 

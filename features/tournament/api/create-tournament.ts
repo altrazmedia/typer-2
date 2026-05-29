@@ -53,29 +53,15 @@ export async function createTournament(request: Request) {
         );
     }
 
-    const result = await prisma.$transaction(async (tx) => {
-        const tournament = await tx.tournament.create({
-            data: {
-                groupId: parsed.groupId,
-                name: parsed.name,
-                season: parsed.season,
-            },
-        });
-        const scoringRule = await tx.scoringRule.create({
-            data: {
-                tournamentId: tournament.id,
-                exactScorePoints: parsed.exactScorePoints,
-                correctOutcomePoints: parsed.correctOutcomePoints,
-            },
-        });
-        return { tournament, scoringRule };
+    const tournament = await prisma.tournament.create({
+        data: {
+            groupId: parsed.groupId,
+            name: parsed.name,
+            season: parsed.season,
+            exactScorePoints: parsed.exactScorePoints,
+            correctOutcomePoints: parsed.correctOutcomePoints,
+        },
     });
 
-    return NextResponse.json(
-        {
-            tournament: result.tournament,
-            scoringRule: result.scoringRule,
-        },
-        { status: 201 },
-    );
+    return NextResponse.json({ tournament }, { status: 201 });
 }

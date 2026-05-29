@@ -40,18 +40,10 @@ CREATE TABLE "Tournament" (
     "name" TEXT NOT NULL,
     "season" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "Tournament_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "ScoringRule" (
-    "id" TEXT NOT NULL,
-    "tournamentId" TEXT NOT NULL,
     "exactScorePoints" INTEGER NOT NULL DEFAULT 3,
     "correctOutcomePoints" INTEGER NOT NULL DEFAULT 1,
 
-    CONSTRAINT "ScoringRule_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Tournament_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -89,9 +81,6 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE UNIQUE INDEX "GroupMember_groupId_userId_key" ON "GroupMember"("groupId", "userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ScoringRule_tournamentId_key" ON "ScoringRule"("tournamentId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Bet_gameId_userId_key" ON "Bet"("gameId", "userId");
 
 -- AddForeignKey
@@ -105,9 +94,6 @@ ALTER TABLE "GroupMember" ADD CONSTRAINT "GroupMember_userId_fkey" FOREIGN KEY (
 
 -- AddForeignKey
 ALTER TABLE "Tournament" ADD CONSTRAINT "Tournament_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ScoringRule" ADD CONSTRAINT "ScoringRule_tournamentId_fkey" FOREIGN KEY ("tournamentId") REFERENCES "Tournament"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Game" ADD CONSTRAINT "Game_tournamentId_fkey" FOREIGN KEY ("tournamentId") REFERENCES "Tournament"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

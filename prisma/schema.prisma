@@ -44,24 +44,16 @@ model GroupMember {
 }
 
 model Tournament {
-  id        String   @id @default(cuid())
-  groupId   String
-  name      String
-  season    String?
-  createdAt DateTime @default(now())
+  id                   String   @id @default(cuid())
+  groupId              String
+  name                 String
+  season               String?
+  createdAt            DateTime @default(now())
+  exactScorePoints     Int      @default(3)
+  correctOutcomePoints Int      @default(1)
 
-  group       Group        @relation(fields: [groupId], references: [id])
-  games       Game[]
-  scoringRule ScoringRule?
-}
-
-model ScoringRule {
-  id                   String @id @default(cuid())
-  tournamentId         String @unique
-  exactScorePoints     Int    @default(3)
-  correctOutcomePoints Int    @default(1)
-
-  tournament Tournament @relation(fields: [tournamentId], references: [id])
+  group Group  @relation(fields: [groupId], references: [id])
+  games Game[]
 }
 
 model Game {

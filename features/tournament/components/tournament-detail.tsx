@@ -26,8 +26,8 @@ export const TournamentDetailView: FC<Props> = ({
     upcomingGames,
 }) => {
     const { tournament, isAdmin } = detail;
-    const exactPts = tournament.scoringRule?.exactScorePoints ?? 3;
-    const outcomePts = tournament.scoringRule?.correctOutcomePoints ?? 1;
+    const exactPts = tournament.exactScorePoints;
+    const outcomePts = tournament.correctOutcomePoints;
 
     return (
         <div className="flex flex-col gap-8">
