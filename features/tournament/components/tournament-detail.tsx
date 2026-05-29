@@ -13,111 +13,116 @@ import type { TournamentDetail } from "@/features/tournament/server/get-tourname
 type TournamentGameRow = TournamentDetail["tournament"]["games"][number];
 
 interface Props {
-  activeTab: TournamentGamesTab;
-  detail: TournamentDetail;
-  finishedGames: TournamentGameRow[];
-  upcomingGames: TournamentGameRow[];
+    activeTab: TournamentGamesTab;
+    detail: TournamentDetail;
+    finishedGames: TournamentGameRow[];
+    upcomingGames: TournamentGameRow[];
 }
 
 export const TournamentDetailView: FC<Props> = ({
-  activeTab,
-  detail,
-  finishedGames,
-  upcomingGames,
+    activeTab,
+    detail,
+    finishedGames,
+    upcomingGames,
 }) => {
-  const { tournament, isAdmin } = detail;
-  const exactPts = tournament.scoringRule?.exactScorePoints ?? 3;
-  const outcomePts = tournament.scoringRule?.correctOutcomePoints ?? 1;
+    const { tournament, isAdmin } = detail;
+    const exactPts = tournament.scoringRule?.exactScorePoints ?? 3;
+    const outcomePts = tournament.scoringRule?.correctOutcomePoints ?? 1;
 
-  return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex flex-col gap-2">
-          <p className="text-sm text-muted-foreground">{tournament.group.name}</p>
-          <h1 className="font-heading text-2xl font-semibold tracking-tight">
-            {tournament.name}
-          </h1>
-          {tournament.season ? (
-            <p className="text-muted-foreground">Sezon: {tournament.season}</p>
-          ) : null}
-          <p className="text-sm text-muted-foreground">
-            Punktacja: {exactPts} pkt za dokładny wynik, {outcomePts} pkt za trafiony wynik
-          </p>
+    return (
+        <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex flex-col gap-2">
+                    <p className="text-sm text-muted-foreground">
+                        {tournament.group.name}
+                    </p>
+                    <h1 className="font-heading text-2xl font-semibold tracking-tight">
+                        {tournament.name}
+                    </h1>
+                    {tournament.season ? (
+                        <p className="text-muted-foreground">
+                            Sezon: {tournament.season}
+                        </p>
+                    ) : null}
+                    <p className="text-sm text-muted-foreground">
+                        Punktacja: {exactPts} pkt za dokładny wynik,{" "}
+                        {outcomePts} pkt za trafiony wynik
+                    </p>
+                </div>
+                {isAdmin ? (
+                    <div className="flex flex-wrap gap-2">
+                        <EditTournamentDialog
+                            tournamentId={tournament.id}
+                            initialName={tournament.name}
+                            initialSeason={tournament.season}
+                            initialExactScorePoints={exactPts}
+                            initialCorrectOutcomePoints={outcomePts}
+                        />
+                        <CreateGameDialog tournamentId={tournament.id} />
+                    </div>
+                ) : null}
+            </div>
+
+            <div className="flex flex-col gap-4">
+                <h2 className="font-heading text-lg font-semibold">Mecze</h2>
+                <Suspense
+                    fallback={
+                        <div className="inline-flex h-8 w-fit min-w-[200px] rounded-lg bg-muted p-[3px]" />
+                    }
+                >
+                    <TabNavigation
+                        activeTab={activeTab}
+                        tabs={[
+                            { label: "Nadchodzące mecze", value: "upcoming" },
+                            { label: "Zakończone mecze", value: "finished" },
+                        ]}
+                    />
+                </Suspense>
+                {activeTab === "upcoming" ? (
+                    upcomingGames.length === 0 ? (
+                        <EmptyContentMessage message="Brak nadchodzących meczów." />
+                    ) : (
+                        <ul className="flex flex-col gap-4">
+                            {upcomingGames.map((game) => (
+                                <li key={game.id}>
+                                    <UpcomingGameCard
+                                        game={{
+                                            id: game.id,
+                                            homeTeam: game.homeTeam,
+                                            awayTeam: game.awayTeam,
+                                            kickoffAt: game.kickoffAt,
+                                            homeScore: game.homeScore,
+                                            awayScore: game.awayScore,
+                                        }}
+                                        userBet={game.bets?.[0] ?? null}
+                                        isAdmin={isAdmin}
+                                    />
+                                </li>
+                            ))}
+                        </ul>
+                    )
+                ) : finishedGames.length === 0 ? (
+                    <EmptyContentMessage message="Brak zakończonych meczów." />
+                ) : (
+                    <ul className="flex flex-col gap-4">
+                        {finishedGames.map((game) => (
+                            <li key={game.id}>
+                                <FinishedGameCard
+                                    game={{
+                                        id: game.id,
+                                        homeTeam: game.homeTeam,
+                                        awayTeam: game.awayTeam,
+                                        kickoffAt: game.kickoffAt,
+                                        homeScore: game.homeScore,
+                                        awayScore: game.awayScore,
+                                    }}
+                                    isAdmin={isAdmin}
+                                />
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
         </div>
-        {isAdmin ? (
-          <div className="flex flex-wrap gap-2">
-            <EditTournamentDialog
-              tournamentId={tournament.id}
-              initialName={tournament.name}
-              initialSeason={tournament.season}
-              initialExactScorePoints={exactPts}
-              initialCorrectOutcomePoints={outcomePts}
-            />
-            <CreateGameDialog tournamentId={tournament.id} />
-          </div>
-        ) : null}
-      </div>
-
-      <div className="flex flex-col gap-4">
-        <h2 className="font-heading text-lg font-semibold">Mecze</h2>
-        <Suspense
-          fallback={
-            <div className="inline-flex h-8 w-fit min-w-[200px] rounded-lg bg-muted p-[3px]" />
-          }
-        >
-          <TabNavigation
-            activeTab={activeTab}
-            tabs={[
-              { label: "Nadchodzące mecze", value: "upcoming" },
-              { label: "Zakończone mecze", value: "finished" },
-            ]}
-          />
-        </Suspense>
-        {activeTab === "upcoming" ? (
-          upcomingGames.length === 0 ? (
-            <EmptyContentMessage message="Brak nadchodzących meczów." />
-          ) : (
-            <ul className="flex flex-col gap-4">
-              {upcomingGames.map((game) => (
-                <li key={game.id}>
-                  <UpcomingGameCard
-                    game={{
-                      id: game.id,
-                      homeTeam: game.homeTeam,
-                      awayTeam: game.awayTeam,
-                      kickoffAt: game.kickoffAt,
-                      homeScore: game.homeScore,
-                      awayScore: game.awayScore,
-                    }}
-                    userBet={game.bets?.[0] ?? null}
-                    isAdmin={isAdmin}
-                  />
-                </li>
-              ))}
-            </ul>
-          )
-        ) : finishedGames.length === 0 ? (
-          <EmptyContentMessage message="Brak zakończonych meczów." />
-        ) : (
-          <ul className="flex flex-col gap-4">
-            {finishedGames.map((game) => (
-              <li key={game.id}>
-                <FinishedGameCard
-                  game={{
-                    id: game.id,
-                    homeTeam: game.homeTeam,
-                    awayTeam: game.awayTeam,
-                    kickoffAt: game.kickoffAt,
-                    homeScore: game.homeScore,
-                    awayScore: game.awayScore,
-                  }}
-                  isAdmin={isAdmin}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  );
+    );
 };

@@ -3,43 +3,43 @@ import "server-only";
 import { prisma } from "@/lib/db";
 
 export type TournamentDetail = NonNullable<
-  Awaited<ReturnType<typeof getTournamentDetailForUser>>
+    Awaited<ReturnType<typeof getTournamentDetailForUser>>
 >;
 
 export async function getTournamentDetailForUser(
-  tournamentId: string,
-  userId: string,
+    tournamentId: string,
+    userId: string,
 ) {
-  const tournament = await prisma.tournament.findUnique({
-    where: { id: tournamentId },
-    include: {
-      scoringRule: true,
-      games: {
-        orderBy: { kickoffAt: "asc" },
+    const tournament = await prisma.tournament.findUnique({
+        where: { id: tournamentId },
         include: {
-          bets: {
-            where: { userId },
-            select: { homeScore: true, awayScore: true },
-          },
+            scoringRule: true,
+            games: {
+                orderBy: { kickoffAt: "asc" },
+                include: {
+                    bets: {
+                        where: { userId },
+                        select: { homeScore: true, awayScore: true },
+                    },
+                },
+            },
+            group: true,
         },
-      },
-      group: true,
-    },
-  });
+    });
 
-  if (!tournament) return null;
+    if (!tournament) return null;
 
-  const membership = await prisma.groupMember.findFirst({
-    where: {
-      userId,
-      groupId: tournament.groupId,
-    },
-  });
+    const membership = await prisma.groupMember.findFirst({
+        where: {
+            userId,
+            groupId: tournament.groupId,
+        },
+    });
 
-  if (!membership) return null;
+    if (!membership) return null;
 
-  return {
-    tournament,
-    isAdmin: membership.isAdmin,
-  };
+    return {
+        tournament,
+        isAdmin: membership.isAdmin,
+    };
 }

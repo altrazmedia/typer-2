@@ -14,15 +14,15 @@ A full-stack web application where a group admin creates football tournaments, a
 
 ## Tech Stack
 
-| Layer | Technology | Rationale |
-|---|---|---|
-| Framework | Next.js 15 (App Router) | Full-stack monorepo — React UI + API routes in one project, ideal for Vercel |
-| Language | TypeScript | End-to-end type safety |
-| Database | Neon (serverless Postgres) | Free tier, zero-config on Vercel via Vercel Postgres integration |
-| ORM | Prisma | Type-safe queries, schema-first migrations |
-| Auth | Auth.js v5 (NextAuth) | Credentials provider (email + bcrypt password), session cookies |
-| Styling | Tailwind CSS + shadcn/ui | Fast, accessible, consistent UI components |
-| Deployment | Vercel | Single project, automatic deploys from git |
+| Layer      | Technology                 | Rationale                                                                    |
+| ---------- | -------------------------- | ---------------------------------------------------------------------------- |
+| Framework  | Next.js 15 (App Router)    | Full-stack monorepo — React UI + API routes in one project, ideal for Vercel |
+| Language   | TypeScript                 | End-to-end type safety                                                       |
+| Database   | Neon (serverless Postgres) | Free tier, zero-config on Vercel via Vercel Postgres integration             |
+| ORM        | Prisma                     | Type-safe queries, schema-first migrations                                   |
+| Auth       | Auth.js v5 (NextAuth)      | Credentials provider (email + bcrypt password), session cookies              |
+| Styling    | Tailwind CSS + shadcn/ui   | Fast, accessible, consistent UI components                                   |
+| Deployment | Vercel                     | Single project, automatic deploys from git                                   |
 
 > **Why Next.js monorepo over separate React SPA + API?**  
 > For a small friend group app, one Vercel project is simpler: shared TypeScript types across UI and API, no CORS configuration, and fewer moving parts. The React frontend is still standard React — it lives in `app/` as server and client components.
@@ -50,37 +50,37 @@ Development uses a **local Postgres** (Docker) as the test database; production 
 
 ### Environment configuration
 
-| Location | Used when | `DATABASE_URL` target |
-|---|---|---|
-| `.env.local` | `npm run dev` (local) | Docker Postgres (`localhost:5432`) |
-| Vercel environment variables | Production deploy | Neon serverless Postgres |
+| Location                     | Used when             | `DATABASE_URL` target              |
+| ---------------------------- | --------------------- | ---------------------------------- |
+| `.env.local`                 | `npm run dev` (local) | Docker Postgres (`localhost:5432`) |
+| Vercel environment variables | Production deploy     | Neon serverless Postgres           |
 
 Additional env vars required for push notifications:
 
-| Variable | Where to set | Notes |
-|---|---|---|
-| `VAPID_PUBLIC_KEY` | `.env.local` + Vercel | Generated once via `npx web-push generate-vapid-keys` |
-| `VAPID_PRIVATE_KEY` | `.env.local` + Vercel | Keep secret — never expose to the client |
-| `VAPID_SUBJECT` | `.env.local` + Vercel | `mailto:admin@yourapp.com` |
-| `CRON_SECRET` | `.env.local` + Vercel | Protects the cron endpoint; Vercel injects it automatically for cron invocations |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | `.env.local` + Vercel | Public key exposed to the browser for push subscription |
+| Variable                       | Where to set          | Notes                                                                            |
+| ------------------------------ | --------------------- | -------------------------------------------------------------------------------- |
+| `VAPID_PUBLIC_KEY`             | `.env.local` + Vercel | Generated once via `npx web-push generate-vapid-keys`                            |
+| `VAPID_PRIVATE_KEY`            | `.env.local` + Vercel | Keep secret — never expose to the client                                         |
+| `VAPID_SUBJECT`                | `.env.local` + Vercel | `mailto:admin@yourapp.com`                                                       |
+| `CRON_SECRET`                  | `.env.local` + Vercel | Protects the cron endpoint; Vercel injects it automatically for cron invocations |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | `.env.local` + Vercel | Public key exposed to the browser for push subscription                          |
 
 ### Example `docker-compose.yml`
 
 ```yaml
 services:
-  db:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: typer_dev
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+    db:
+        image: postgres:16-alpine
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: typer_dev
+        ports:
+            - "5432:5432"
+        volumes:
+            - pgdata:/var/lib/postgresql/data
 volumes:
-  pgdata:
+    pgdata:
 ```
 
 Example local URL: `postgresql://postgres:postgres@localhost:5432/typer_dev`
@@ -173,27 +173,29 @@ typer-2/
 
 ### Entities at a glance
 
-| Model | Purpose |
-|---|---|
-| `User` | Registered user — email, hashed password, name |
-| `Group` | A circle of friends sharing tournaments |
-| `GroupMember` | Join table — links users to groups, tracks admin flag |
-| `Tournament` | A competition (e.g. World Cup 2026) belonging to a group |
-| `ScoringRule` | Points config per tournament (exact score pts, correct outcome pts) |
-| `Game` | A match with teams, kickoff time, and optional result scores |
-| `Bet` | A user's predicted score for a game, with awarded points once result is known |
-| `PushSubscription` | Browser push subscription (endpoint + VAPID keys) per user device |
+| Model              | Purpose                                                                       |
+| ------------------ | ----------------------------------------------------------------------------- |
+| `User`             | Registered user — email, hashed password, name                                |
+| `Group`            | A circle of friends sharing tournaments                                       |
+| `GroupMember`      | Join table — links users to groups, tracks admin flag                         |
+| `Tournament`       | A competition (e.g. World Cup 2026) belonging to a group                      |
+| `ScoringRule`      | Points config per tournament (exact score pts, correct outcome pts)           |
+| `Game`             | A match with teams, kickoff time, and optional result scores                  |
+| `Bet`              | A user's predicted score for a game, with awarded points once result is known |
+| `PushSubscription` | Browser push subscription (endpoint + VAPID keys) per user device             |
 
 ---
 
 ## Auth & Group Access
 
 ### Registration & Login
+
 - Users register with email + password; password stored as bcrypt hash
 - Auth.js Credentials provider validates credentials and issues a session cookie
 - `proxy.ts` protects app routes (e.g. `/dashboard`) — unauthenticated users are redirected to `/login`
 
 ### Add Member Flow
+
 1. Admin calls `POST /api/groups/[id]/members` with body `{ "email": "user@example.com" }`
 2. API looks up the `User` by email — returns **404** if not found (user must register first)
 3. If found, creates a `GroupMember` row (`isAdmin: false` by default)
@@ -213,6 +215,7 @@ Body: { "email": "user@example.com" }
 ```
 
 ### Admin Role
+
 - The creator of a group is automatically an admin (`GroupMember.isAdmin = true`)
 - Admin-only routes/API handlers check `GroupMember.isAdmin` for the current session user
 
@@ -238,6 +241,7 @@ outcome(score):
 ```
 
 When a result is entered:
+
 1. Validate user is admin of the tournament's group
 2. Update `Game.homeScore` and `Game.awayScore`
 3. Fetch all `Bet` rows for the game
@@ -269,13 +273,13 @@ Exposed as a Next.js Server Component (no separate API route needed) — data fe
 
 ## Key Business Rules
 
-| Rule | Implementation |
-|---|---|
-| Bets locked after kickoff | API checks `game.kickoffAt < now()` and rejects updates |
-| One bet per user per game | `@@unique([gameId, userId])` in Prisma + upsert on submit |
-| Only admin can enter results | Middleware check on `GroupMember.isAdmin` |
-| Points calculated once | If `Game.homeScore` is already set, re-entry is blocked (or requires explicit override) |
-| Users only see their group's data | All queries are scoped to `groupId` derived from session |
+| Rule                              | Implementation                                                                          |
+| --------------------------------- | --------------------------------------------------------------------------------------- |
+| Bets locked after kickoff         | API checks `game.kickoffAt < now()` and rejects updates                                 |
+| One bet per user per game         | `@@unique([gameId, userId])` in Prisma + upsert on submit                               |
+| Only admin can enter results      | Middleware check on `GroupMember.isAdmin`                                               |
+| Points calculated once            | If `Game.homeScore` is already set, re-entry is blocked (or requires explicit override) |
+| Users only see their group's data | All queries are scoped to `groupId` derived from session                                |
 
 ---
 
@@ -327,6 +331,7 @@ Execute the following phases in order. Each phase should be fully working before
 - Verify: admin can create a full tournament with games; non-admin users do not see admin controls
 
 ### Phase 5 — Betting UI
+
 - Build `/dashboard`: list of upcoming games (kickoff in future), sorted by kickoff date
 - Each game shows a `BetForm` component: two number inputs (home score, away score) + submit button
 - `BetForm` calls `POST /api/bets` (creates) or `PUT /api/bets` (updates); disabled after kickoff
@@ -334,25 +339,28 @@ Execute the following phases in order. Each phase should be fully working before
 - Verify: user can submit and edit a bet before kickoff; form is disabled after kickoff
 
 ### Phase 6 — Result Entry & Scoring
+
 - Implement `lib/scoring.ts` with `calculatePoints` function
 - Wire up `POST /api/games/[id]/result`: validate admin, update game scores, calculate + write `pointsAwarded` for all bets in a transaction
 - Verify: after entering a result, all bets for the game have correct `pointsAwarded` values in the DB
 
 ### Phase 7 — Leaderboard
+
 - Build `/tournaments/[id]/leaderboard` as a server component: runs the grouped SUM query scoped to the tournament, renders a ranked table (rank, name, points)
 - Add navigation links throughout the app
 - Verify: leaderboard reflects correct totals after results are entered
 
 ### Phase 8 — Polish & deployment
+
 - Add empty states (no tournaments, no games, no bets yet)
 - Add loading skeletons for slow data fetches
 - Mobile-responsive layout
 - Basic error handling (toasts for form errors)
 - **Deploy to Vercel**
-  - Create/link Vercel project to the git repo; production branch deploys on push
-  - In Vercel project settings, set environment variables: `DATABASE_URL` (Neon connection string), `AUTH_SECRET` (generate a secure random string), `NEXTAUTH_URL` (canonical production URL, e.g. `https://your-app.vercel.app`)
-  - Ensure production build runs `prisma migrate deploy` (e.g. `postinstall` or `vercel-build` script) so the Neon schema stays in sync — never run `prisma migrate dev` against production
-  - Confirm the live site connects to Neon and auth/session flows work end-to-end
+    - Create/link Vercel project to the git repo; production branch deploys on push
+    - In Vercel project settings, set environment variables: `DATABASE_URL` (Neon connection string), `AUTH_SECRET` (generate a secure random string), `NEXTAUTH_URL` (canonical production URL, e.g. `https://your-app.vercel.app`)
+    - Ensure production build runs `prisma migrate deploy` (e.g. `postinstall` or `vercel-build` script) so the Neon schema stays in sync — never run `prisma migrate dev` against production
+    - Confirm the live site connects to Neon and auth/session flows work end-to-end
 
 ### Phase 9 — PWA (installable on phone)
 
@@ -366,6 +374,7 @@ Next.js 15 App Router has built-in manifest support — no extra library needed.
 - **`components/ServiceWorkerRegistrar.tsx`** — client component that calls `navigator.serviceWorker.register("/sw.js")` on mount; rendered once in `app/(app)/layout.tsx`
 
 **Verify:**
+
 - Chrome DevTools → Application → Manifest shows no errors
 - "Add to Home Screen" prompt appears (or can be triggered manually)
 - Installed app opens in standalone mode (no browser chrome)
@@ -407,13 +416,13 @@ Run `prisma migrate dev --name add-push-subscriptions` after adding the `PushSub
 
 #### New files and routes
 
-| File | Purpose |
-|---|---|
-| `lib/webpush.ts` | Initialises `web-push` with VAPID keys; exports `sendPush(sub, payload)` helper; deletes expired subscriptions (HTTP 410) automatically |
-| `app/api/push/subscribe/route.ts` | `POST` — upserts a `PushSubscription` row for the session user; `DELETE` — removes it |
-| `app/api/cron/notify-missing-bets/route.ts` | Protected cron handler (checks `Authorization: Bearer ${CRON_SECRET}`); queries unbetted upcoming games and sends pushes |
-| `vercel.json` | Declares the hourly cron: `{ "crons": [{ "path": "/api/cron/notify-missing-bets", "schedule": "0 * * * *" }] }` |
-| `components/NotificationToggle.tsx` | Client component with an enable/disable button; reads `Notification.permission`, subscribes via `pushManager`, calls the subscribe API |
+| File                                        | Purpose                                                                                                                                 |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `lib/webpush.ts`                            | Initialises `web-push` with VAPID keys; exports `sendPush(sub, payload)` helper; deletes expired subscriptions (HTTP 410) automatically |
+| `app/api/push/subscribe/route.ts`           | `POST` — upserts a `PushSubscription` row for the session user; `DELETE` — removes it                                                   |
+| `app/api/cron/notify-missing-bets/route.ts` | Protected cron handler (checks `Authorization: Bearer ${CRON_SECRET}`); queries unbetted upcoming games and sends pushes                |
+| `vercel.json`                               | Declares the hourly cron: `{ "crons": [{ "path": "/api/cron/notify-missing-bets", "schedule": "0 * * * *" }] }`                         |
+| `components/NotificationToggle.tsx`         | Client component with an enable/disable button; reads `Notification.permission`, subscribes via `pushManager`, calls the subscribe API  |
 
 #### Cron query logic (pseudocode)
 
@@ -439,15 +448,16 @@ for each game:
 
 #### Key constraints and caveats
 
-| Concern | Handling |
-|---|---|
-| iOS Safari | Push only works after PWA is installed to home screen (iOS 16.4+); `NotificationToggle` checks `display-mode: standalone` before showing the button |
-| Multiple devices per user | A user may have multiple `PushSubscription` rows; all are notified |
-| Expired subscriptions | `web-push` returns HTTP 410 for stale subscriptions; the cron handler deletes those rows |
-| Duplicate notifications | The cron runs hourly; a notification is sent each hour until a bet is placed or kickoff passes |
-| Local testing | Use `web-push send-notification` CLI or a test script to simulate a push against a local subscription |
+| Concern                   | Handling                                                                                                                                            |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| iOS Safari                | Push only works after PWA is installed to home screen (iOS 16.4+); `NotificationToggle` checks `display-mode: standalone` before showing the button |
+| Multiple devices per user | A user may have multiple `PushSubscription` rows; all are notified                                                                                  |
+| Expired subscriptions     | `web-push` returns HTTP 410 for stale subscriptions; the cron handler deletes those rows                                                            |
+| Duplicate notifications   | The cron runs hourly; a notification is sent each hour until a bet is placed or kickoff passes                                                      |
+| Local testing             | Use `web-push send-notification` CLI or a test script to simulate a push against a local subscription                                               |
 
 **Verify:**
+
 - After enabling notifications, a `PushSubscription` row exists in the DB for the user
 - Manually calling `/api/cron/notify-missing-bets` with the correct `Authorization` header triggers a push to devices with no bet
 - Tapping the notification opens `/dashboard`

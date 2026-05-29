@@ -60,7 +60,7 @@ All feature-specific code lives under `features/<feature>/` — never inside `ap
     import { createTournament } from "@/features/tournament/api/create-tournament";
 
     export async function POST(req: Request) {
-      return createTournament(req);
+        return createTournament(req);
     }
     ```
 
@@ -76,11 +76,10 @@ All feature-specific code lives under `features/<feature>/` — never inside `ap
 - **Runner**: Vitest (`npm run test` watch, `npm run test:run` CI-style).
 - **Where tests live**: `features/<feature>/__tests__/**/*.test.{ts,tsx}` (and optionally `lib/**/__tests__/**/*.test.ts`). Shared helpers live in top-level `test/` (not under `features/`).
 - **Global mocks** (see [test/setup.ts](test/setup.ts)):
-  - `@/lib/db` → deep-mocked Prisma client from [test/prisma.ts](test/prisma.ts); reset each test via `mockReset` in `afterEach`.
-  - `@/lib/auth` → `auth` is a `vi.fn()` defaulting to unauthenticated (`null`). Use [test/auth.ts](test/auth.ts): `mockAuthedUser({ id })` / `mockUnauthed()`.
-  - `next/navigation` → [test/router.ts](test/router.ts) `mockRouter` (`push`, `refresh`, …).
-  - `next-auth/react` → `signIn` is a `vi.fn()`; configure per component test.
-  - `server-only` is aliased to an empty stub so `features/*/api/*` and `features/*/server/*` import in Vitest.
+    - `@/lib/db` → deep-mocked Prisma client from [test/prisma.ts](test/prisma.ts); reset each test via `mockReset` in `afterEach`.
+    - `@/lib/auth` → `auth` is a `vi.fn()` defaulting to unauthenticated (`null`). Use [test/auth.ts](test/auth.ts): `mockAuthedUser({ id })` / `mockUnauthed()`.
+    - `next/navigation` → [test/router.ts](test/router.ts) `mockRouter` (`push`, `refresh`, …).
+    - `next-auth/react` → `signIn` is a `vi.fn()`; configure per component test.
+    - `server-only` is aliased to an empty stub so `features/*/api/*` and `features/*/server/*` import in Vitest.
 - **Handlers**: build requests with [test/request.ts](test/request.ts); assert JSON responses with [test/response.ts](test/response.ts) (`readJson`) — remember `NextResponse.json` serializes `Date` as ISO strings in the wire body.
 - **Fixtures**: [test/factories.ts](test/factories.ts) for Prisma-shaped objects.
-

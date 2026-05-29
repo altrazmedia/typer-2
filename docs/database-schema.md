@@ -133,11 +133,11 @@ erDiagram
 
 ## Key Constraints
 
-| Constraint | Enforcement |
-|---|---|
-| One bet per user per game | `@@unique([gameId, userId])` |
-| One scoring rule per tournament | `@unique` on `ScoringRule.tournamentId` |
-| Game scores are nullable | `homeScore Int?` / `awayScore Int?` — null until result entered |
-| Bet points are nullable | `pointsAwarded Int?` — null until result calculated |
-| Push subscription endpoint unique | `@unique` on `PushSubscription.endpoint` — prevents duplicate registrations |
-| Push subscriptions cascade-deleted | `onDelete: Cascade` — subscriptions are removed when a user is deleted |
+| Constraint                         | Enforcement                                                                 |
+| ---------------------------------- | --------------------------------------------------------------------------- |
+| One bet per user per game          | `@@unique([gameId, userId])`                                                |
+| One scoring rule per tournament    | `@unique` on `ScoringRule.tournamentId`                                     |
+| Game scores are nullable           | `homeScore Int?` / `awayScore Int?` — null until result entered             |
+| Bet points are nullable            | `pointsAwarded Int?` — null until result calculated                         |
+| Push subscription endpoint unique  | `@unique` on `PushSubscription.endpoint` — prevents duplicate registrations |
+| Push subscriptions cascade-deleted | `onDelete: Cascade` — subscriptions are removed when a user is deleted      |
