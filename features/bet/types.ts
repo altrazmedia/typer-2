@@ -1,4 +1,4 @@
 export interface BetRow {
-  homeScore: number;
-  awayScore: number;
+    homeScore: number;
+    awayScore: number;
 }
