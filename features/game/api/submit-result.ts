@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { requireAuth, requireTournamentAdmin } from "@/lib/api-utils";
 import { prisma } from "@/lib/db";
 
+import { awardGamePoints } from "@/features/game/api/award-game-points";
 import { parseSubmitResultBody } from "@/features/game/schema";
 
 interface RouteContext {
@@ -62,12 +63,16 @@ export async function submitGameResult(
         );
     }
 
-    const updated = await prisma.game.update({
-        where: { id: gameId },
-        data: {
-            homeScore: parsed.homeScore,
-            awayScore: parsed.awayScore,
-        },
+    const updated = await prisma.$transaction(async (tx) => {
+        const game = await tx.game.update({
+            where: { id: gameId },
+            data: {
+                homeScore: parsed.homeScore,
+                awayScore: parsed.awayScore,
+            },
+        });
+        await awardGamePoints(gameId, tx);
+        return game;
     });
 
     return NextResponse.json({ game: updated });
