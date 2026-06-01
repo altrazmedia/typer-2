@@ -1,11 +1,22 @@
-interface Score {
+export interface Score {
     homeScore: number;
     awayScore: number;
 }
 
-interface ScoringRule {
+export interface ScoringRule {
     exactScorePoints: number;
     correctOutcomePoints: number;
+}
+
+export interface BetForScoring {
+    id: string;
+    homeScore: number;
+    awayScore: number;
+}
+
+export interface BetPointsUpdate {
+    betId: string;
+    pointsAwarded: number;
 }
 
 function getOutcome(score: Score): -1 | 0 | 1 {
@@ -32,4 +43,19 @@ export function calculatePoints(
     }
 
     return 0;
+}
+
+export function computeBetPointsUpdates(
+    bets: BetForScoring[],
+    actual: Score,
+    rule: ScoringRule,
+): BetPointsUpdate[] {
+    return bets.map((bet) => ({
+        betId: bet.id,
+        pointsAwarded: calculatePoints(
+            { homeScore: bet.homeScore, awayScore: bet.awayScore },
+            actual,
+            rule,
+        ),
+    }));
 }
