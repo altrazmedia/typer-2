@@ -77,15 +77,21 @@ model Game {
   bets         Bet[]
 }
 
+enum BetResult {
+  EXACT_SCORE
+  CORRECT_OUTCOME
+  INCORRECT
+}
+
 model Bet {
-  id            String   @id @default(cuid())
-  gameId        String
-  userId        String
-  homeScore     Int
-  awayScore     Int
-  pointsAwarded Int?     // null until game result is entered
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id        String     @id @default(cuid())
+  gameId    String
+  userId    String
+  homeScore Int
+  awayScore Int
+  betResult BetResult? // null until game result is entered
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   game          Game     @relation(fields: [gameId], references: [id])
   user          User     @relation(fields: [userId], references: [id])
@@ -129,6 +135,6 @@ erDiagram
 | One bet per user per game          | `@@unique([gameId, userId])`                                                 |
 | Scoring points per tournament      | `exactScorePoints` / `correctOutcomePoints` on `Tournament` (defaults 3 / 1) |
 | Game scores are nullable           | `homeScore Int?` / `awayScore Int?` — null until result entered              |
-| Bet points are nullable            | `pointsAwarded Int?` — null until result calculated                          |
+| Bet result is nullable             | `betResult BetResult?` — null until result calculated                        |
 | Push subscription endpoint unique  | `@unique` on `PushSubscription.endpoint` — prevents duplicate registrations  |
 | Push subscriptions cascade-deleted | `onDelete: Cascade` — subscriptions are removed when a user is deleted       |

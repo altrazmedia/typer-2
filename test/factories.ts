@@ -83,7 +83,7 @@ export function makeBet(overrides: Partial<Bet> = {}): Bet {
         userId: "user_test_1",
         homeScore: 1,
         awayScore: 1,
-        pointsAwarded: null,
+        betResult: null,
         createdAt: now,
         updatedAt: now,
         ...overrides,
