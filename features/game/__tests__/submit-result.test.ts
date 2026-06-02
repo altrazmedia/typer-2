@@ -1,3 +1,4 @@
+import { BetResult } from "@prisma/client";
 import type { Prisma } from "@prisma/client";
 import { describe, expect, it } from "vitest";
 
@@ -106,7 +107,7 @@ describe("submitGameResult", () => {
         });
     });
 
-    it("returns 200 and awards points for all bets when admin submits result", async () => {
+    it("returns 200 and awards bet results for all bets when admin submits result", async () => {
         mockAuthedUser({ id: "u1" });
         mockAdminAccess();
         mockTransaction();
@@ -138,19 +139,19 @@ describe("submitGameResult", () => {
         expect(prisma.bet.update).toHaveBeenCalledTimes(3);
         expect(prisma.bet.update).toHaveBeenCalledWith({
             where: { id: "bet_exact" },
-            data: { pointsAwarded: 3 },
+            data: { betResult: BetResult.EXACT_SCORE },
         });
         expect(prisma.bet.update).toHaveBeenCalledWith({
             where: { id: "bet_outcome" },
-            data: { pointsAwarded: 1 },
+            data: { betResult: BetResult.CORRECT_OUTCOME },
         });
         expect(prisma.bet.update).toHaveBeenCalledWith({
             where: { id: "bet_wrong" },
-            data: { pointsAwarded: 0 },
+            data: { betResult: BetResult.INCORRECT },
         });
     });
 
-    it("recalculates points when admin re-submits a different score", async () => {
+    it("recalculates bet results when admin re-submits a different score", async () => {
         mockAuthedUser({ id: "u1" });
         mockTransaction();
 
@@ -190,7 +191,7 @@ describe("submitGameResult", () => {
         await submitGameResult(firstReq, makeRouteContext());
         expect(prisma.bet.update).toHaveBeenCalledWith({
             where: { id: "bet_1" },
-            data: { pointsAwarded: 3 },
+            data: { betResult: BetResult.EXACT_SCORE },
         });
 
         const secondReq = makeJsonRequest({ homeScore: 0, awayScore: 0 });
@@ -200,7 +201,7 @@ describe("submitGameResult", () => {
         expect(status).toBe(200);
         expect(prisma.bet.update).toHaveBeenLastCalledWith({
             where: { id: "bet_1" },
-            data: { pointsAwarded: 0 },
+            data: { betResult: BetResult.INCORRECT },
         });
     });
 

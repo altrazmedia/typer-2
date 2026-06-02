@@ -2,7 +2,7 @@ import "server-only";
 
 import type { Prisma } from "@prisma/client";
 
-import { computeBetPointsUpdates } from "@/features/game/scoring";
+import { computeBetResults } from "@/features/game/scoring";
 
 export async function awardGamePoints(
     gameId: string,
@@ -11,7 +11,6 @@ export async function awardGamePoints(
     const game = await tx.game.findUnique({
         where: { id: gameId },
         include: {
-            tournament: true,
             bets: true,
         },
     });
@@ -25,18 +24,13 @@ export async function awardGamePoints(
     }
 
     const actual = { homeScore: game.homeScore, awayScore: game.awayScore };
-    const rule = {
-        exactScorePoints: game.tournament.exactScorePoints,
-        correctOutcomePoints: game.tournament.correctOutcomePoints,
-    };
-
-    const updates = computeBetPointsUpdates(game.bets, actual, rule);
+    const updates = computeBetResults(game.bets, actual);
 
     await Promise.all(
-        updates.map(({ betId, pointsAwarded }) =>
+        updates.map(({ betId, betResult }) =>
             tx.bet.update({
                 where: { id: betId },
-                data: { pointsAwarded },
+                data: { betResult },
             }),
         ),
     );

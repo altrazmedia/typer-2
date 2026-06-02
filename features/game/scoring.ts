@@ -1,11 +1,8 @@
+import { BetResult } from "@prisma/client";
+
 export interface Score {
     homeScore: number;
     awayScore: number;
-}
-
-export interface ScoringRule {
-    exactScorePoints: number;
-    correctOutcomePoints: number;
 }
 
 export interface BetForScoring {
@@ -14,9 +11,9 @@ export interface BetForScoring {
     awayScore: number;
 }
 
-export interface BetPointsUpdate {
+export interface BetResultUpdate {
     betId: string;
-    pointsAwarded: number;
+    betResult: BetResult;
 }
 
 function getOutcome(score: Score): -1 | 0 | 1 {
@@ -26,36 +23,30 @@ function getOutcome(score: Score): -1 | 0 | 1 {
     return 0;
 }
 
-export function calculatePoints(
-    bet: Score,
-    actual: Score,
-    rule: ScoringRule,
-): number {
+export function classifyBet(bet: Score, actual: Score): BetResult {
     if (
         bet.homeScore === actual.homeScore &&
         bet.awayScore === actual.awayScore
     ) {
-        return rule.exactScorePoints;
+        return BetResult.EXACT_SCORE;
     }
 
     if (getOutcome(bet) === getOutcome(actual)) {
-        return rule.correctOutcomePoints;
+        return BetResult.CORRECT_OUTCOME;
     }
 
-    return 0;
+    return BetResult.INCORRECT;
 }
 
-export function computeBetPointsUpdates(
+export function computeBetResults(
     bets: BetForScoring[],
     actual: Score,
-    rule: ScoringRule,
-): BetPointsUpdate[] {
+): BetResultUpdate[] {
     return bets.map((bet) => ({
         betId: bet.id,
-        pointsAwarded: calculatePoints(
+        betResult: classifyBet(
             { homeScore: bet.homeScore, awayScore: bet.awayScore },
             actual,
-            rule,
         ),
     }));
 }
