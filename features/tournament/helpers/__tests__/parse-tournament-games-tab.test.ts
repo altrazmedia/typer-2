@@ -11,6 +11,10 @@ describe("parseTournamentGamesTab", () => {
         expect(parseTournamentGamesTab("finished")).toBe("finished");
     });
 
+    it("returns tabela for tab=tabela", () => {
+        expect(parseTournamentGamesTab("leaderboard")).toBe("leaderboard");
+    });
+
     it("treats unknown values as upcoming", () => {
         expect(parseTournamentGamesTab("other")).toBe("upcoming");
     });

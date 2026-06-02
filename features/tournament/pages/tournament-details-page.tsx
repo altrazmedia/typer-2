@@ -6,6 +6,7 @@ import { TournamentDetailView } from "@/features/tournament/components/tournamen
 import { classifyGames } from "@/features/tournament/helpers/classify-games";
 import { parseTournamentGamesTab } from "@/features/tournament/helpers/parse-tournament-games-tab";
 import { getTournamentDetailForUser } from "@/features/tournament/server/get-tournament-detail";
+import { getTournamentLeaderboard } from "@/features/tournament/server/get-tournament-leaderboard";
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -34,12 +35,18 @@ export async function TournamentDetailsPage({ params, searchParams }: Props) {
         new Date(),
     );
 
+    const leaderboard =
+        activeTab === "leaderboard"
+            ? await getTournamentLeaderboard(tournamentId)
+            : null;
+
     return (
         <TournamentDetailView
             detail={detail}
             activeTab={activeTab}
             finishedGames={finishedGames}
             upcomingGames={upcomingGames}
+            leaderboard={leaderboard ?? []}
         />
     );
 }

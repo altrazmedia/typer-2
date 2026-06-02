@@ -53,6 +53,33 @@ vi.mock("@/features/game/components/create-game-dialog", () => ({
     CreateGameDialog: () => null,
 }));
 
+vi.mock("@/features/tournament/components/leaderboard-table", () => ({
+    LeaderboardTable: ({
+        leaderboard,
+    }: {
+        leaderboard: { name: string; rank: number; totalPoints: number }[];
+    }) => (
+        <div data-testid="leaderboard-table">
+            {leaderboard.map((entry) => (
+                <div
+                    key={entry.rank}
+                    data-testid={`leaderboard-row-${entry.rank}`}
+                >
+                    {entry.rank} {entry.name} {entry.totalPoints}
+                </div>
+            ))}
+        </div>
+    ),
+}));
+
+type TournamentGameRow = TournamentDetail["tournament"]["games"][number];
+
+function makeGameRow(
+    overrides: Parameters<typeof makeGame>[0] = {},
+): TournamentGameRow {
+    return { ...makeGame(overrides), bets: [] };
+}
+
 function makeTournamentDetail(
     games: ReturnType<typeof makeGame>[],
     isAdmin = false,
@@ -81,6 +108,7 @@ describe("TournamentDetailView", () => {
                 activeTab="upcoming"
                 detail={detail}
                 finishedGames={[]}
+                leaderboard={[]}
                 upcomingGames={[]}
             />,
         );
@@ -92,6 +120,7 @@ describe("TournamentDetailView", () => {
         expect(screen.getByText("Sezon: 2025/26")).toBeInTheDocument();
         expect(screen.getByText("Nadchodzące mecze")).toBeInTheDocument();
         expect(screen.getByText("Zakończone mecze")).toBeInTheDocument();
+        expect(screen.getByText("Tabela")).toBeInTheDocument();
     });
 
     it("shows empty copy for upcoming when there are no upcoming games", () => {
@@ -101,6 +130,7 @@ describe("TournamentDetailView", () => {
                 activeTab="upcoming"
                 detail={detail}
                 finishedGames={[]}
+                leaderboard={[]}
                 upcomingGames={[]}
             />,
         );
@@ -110,7 +140,7 @@ describe("TournamentDetailView", () => {
     });
 
     it("lists upcoming games when active tab is upcoming", () => {
-        const g = makeGame({
+        const g = makeGameRow({
             awayTeam: "Goście",
             homeTeam: "Gospodarze",
             id: "game_u1",
@@ -121,6 +151,7 @@ describe("TournamentDetailView", () => {
                 activeTab="upcoming"
                 detail={detail}
                 finishedGames={[]}
+                leaderboard={[]}
                 upcomingGames={[g]}
             />,
         );
@@ -136,6 +167,7 @@ describe("TournamentDetailView", () => {
                 activeTab="finished"
                 detail={detail}
                 finishedGames={[]}
+                leaderboard={[]}
                 upcomingGames={[]}
             />,
         );
@@ -145,7 +177,7 @@ describe("TournamentDetailView", () => {
     });
 
     it("lists finished games when active tab is finished", () => {
-        const g = makeGame({
+        const g = makeGameRow({
             awayTeam: "B",
             homeTeam: "A",
             id: "game_f1",
@@ -156,9 +188,76 @@ describe("TournamentDetailView", () => {
                 activeTab="finished"
                 detail={detail}
                 finishedGames={[g]}
+                leaderboard={[]}
                 upcomingGames={[]}
             />,
         );
         expect(screen.getByTestId("game-game_f1")).toHaveTextContent("A — B");
+    });
+
+    it("renders leaderboard table when active tab is leaderboard", () => {
+        const detail = makeTournamentDetail([]);
+        const leaderboard = [
+            {
+                rank: 1,
+                userId: "user_1",
+                name: "Jan Kowalski",
+                exactScoreBets: 2,
+                correctOutcomeBets: 3,
+                totalPoints: 11,
+            },
+            {
+                rank: 2,
+                userId: "user_2",
+                name: "Anna Nowak",
+                exactScoreBets: 1,
+                correctOutcomeBets: 2,
+                totalPoints: 7,
+            },
+        ];
+        render(
+            <TournamentDetailView
+                activeTab="leaderboard"
+                detail={detail}
+                finishedGames={[]}
+                leaderboard={leaderboard}
+                upcomingGames={[]}
+            />,
+        );
+
+        expect(screen.getByTestId("leaderboard-table")).toBeInTheDocument();
+        expect(screen.getByTestId("leaderboard-row-1")).toHaveTextContent(
+            "1 Jan Kowalski 11",
+        );
+        expect(screen.getByTestId("leaderboard-row-2")).toHaveTextContent(
+            "2 Anna Nowak 7",
+        );
+        expect(
+            screen.queryByText("Brak nadchodzących meczów."),
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByText("Brak zakończonych meczów."),
+        ).not.toBeInTheDocument();
+    });
+
+    it("hides games list when active tab is tabela", () => {
+        const g = makeGameRow({
+            awayTeam: "B",
+            homeTeam: "A",
+            id: "game_u1",
+        });
+        const detail = makeTournamentDetail([g]);
+        render(
+            <TournamentDetailView
+                activeTab="leaderboard"
+                detail={detail}
+                finishedGames={[g]}
+                leaderboard={[]}
+                upcomingGames={[g]}
+            />,
+        );
+
+        expect(screen.getByTestId("leaderboard-table")).toBeInTheDocument();
+        expect(screen.queryByTestId("game-game_u1")).not.toBeInTheDocument();
     });
 });
