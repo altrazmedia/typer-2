@@ -1,5 +1,6 @@
 import "server-only";
 
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 import { requireAuth, requireTournamentAdmin } from "@/lib/api-utils";
@@ -74,6 +75,8 @@ export async function submitGameResult(
         await awardGamePoints(gameId, tx);
         return game;
     });
+
+    revalidateTag(`leaderboard:${game.tournamentId}`, "days");
 
     return NextResponse.json({ game: updated });
 }

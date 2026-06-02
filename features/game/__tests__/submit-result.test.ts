@@ -1,6 +1,6 @@
 import { BetResult } from "@prisma/client";
 import type { Prisma } from "@prisma/client";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { submitGameResult } from "@/features/game/api/submit-result";
 import { mockAuthedUser, mockUnauthed } from "@/test/auth";
@@ -13,6 +13,12 @@ import {
 import { prisma } from "@/test/prisma";
 import { makeInvalidJsonRequest, makeJsonRequest } from "@/test/request";
 import { readJson } from "@/test/response";
+
+vi.mock("next/cache", () => ({
+    revalidateTag: vi.fn(),
+}));
+
+import { revalidateTag } from "next/cache";
 
 const gameId = "game_test_1";
 
@@ -149,6 +155,10 @@ describe("submitGameResult", () => {
             where: { id: "bet_wrong" },
             data: { betResult: BetResult.INCORRECT },
         });
+        expect(revalidateTag).toHaveBeenCalledWith(
+            "leaderboard:tournament_test_1",
+            "days",
+        );
     });
 
     it("recalculates bet results when admin re-submits a different score", async () => {
