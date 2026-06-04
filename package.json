@@ -6,6 +6,8 @@
         "postinstall": "prisma generate",
         "dev": "next dev",
         "local": "docker compose up -d --wait && prisma migrate deploy && prisma db seed && next dev",
+        "local:docker": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build",
+        "local:docker:down": "docker compose -f docker-compose.yml -f docker-compose.dev.yml down",
         "db:up": "docker compose up -d --wait",
         "db:down": "docker compose down",
         "db:migrate": "prisma migrate deploy",
