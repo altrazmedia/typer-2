@@ -1,24 +1,22 @@
+"use client";
+
+import { LogOutIcon } from "lucide-react";
 import type { FC } from "react";
 
-import { Button } from "@/components/ui/button";
-import { signOut } from "@/lib/auth";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { signOutAction } from "@/features/auth/server/sign-out-action";
 
-export const SignOutButton: FC = () => {
+export const SignOutMenuItem: FC = () => {
     return (
-        <form
-            action={async () => {
-                "use server";
-                await signOut({ redirectTo: "/login" });
-            }}
-        >
-            <Button
-                type="submit"
-                variant="outline"
-                size="sm"
-                className="bg-sidebar-primary text-sidebar-primary-foreground"
+        <form action={signOutAction} className="contents">
+            <DropdownMenuItem
+                nativeButton
+                render={<button type="submit" className="w-full" />}
+                variant="destructive"
             >
+                <LogOutIcon />
                 Wyloguj się
-            </Button>
+            </DropdownMenuItem>
         </form>
     );
 };

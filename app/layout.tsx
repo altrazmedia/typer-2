@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 
 import { ToastProviderViewport } from "@/components/ui/toast";
+import { getThemeInitScript } from "@/lib/theme";
 
 import { AuthSessionProvider } from "./providers";
 import "./globals.css";
@@ -30,7 +31,15 @@ export default function RootLayout({
         <html
             lang="pl"
             className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
+            suppressHydrationWarning
         >
+            <head>
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: getThemeInitScript(),
+                    }}
+                />
+            </head>
             <body className="flex min-h-full flex-col">
                 <ToastProviderViewport>
                     <AuthSessionProvider>{children}</AuthSessionProvider>

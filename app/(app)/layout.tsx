@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { SignOutButton } from "@/features/auth/components/sign-out-button";
+import { HeaderUserMenu } from "@/features/auth/components/header-user-menu";
 
 export default function AppLayout({
     children,
@@ -19,7 +19,7 @@ export default function AppLayout({
                             Typer
                         </Link>
                     </div>
-                    <SignOutButton />
+                    <HeaderUserMenu />
                 </div>
             </header>
             <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
