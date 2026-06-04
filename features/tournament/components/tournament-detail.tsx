@@ -11,6 +11,7 @@ import { LeaderboardTable } from "@/features/tournament/components/leaderboard-t
 import type { TournamentGamesTab } from "@/features/tournament/helpers/parse-tournament-games-tab";
 import type { TournamentDetail } from "@/features/tournament/server/get-tournament-detail";
 import type { LeaderboardEntry } from "@/features/tournament/types";
+import { PageHeader } from "@/components/ui/page-header";
 
 type TournamentGameRow = TournamentDetail["tournament"]["games"][number];
 
@@ -37,24 +38,12 @@ export const TournamentDetailView: FC<Props> = ({
 
     return (
         <div className="flex flex-col gap-8">
+            <PageHeader header={tournament.name} />
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="flex flex-col gap-2">
-                    <p className="text-sm text-muted-foreground">
-                        {tournament.group.name}
-                    </p>
-                    <h1 className="font-heading text-2xl font-semibold tracking-tight">
-                        {tournament.name}
-                    </h1>
-                    {tournament.season ? (
-                        <p className="text-muted-foreground">
-                            Sezon: {tournament.season}
-                        </p>
-                    ) : null}
-                    <p className="text-sm text-muted-foreground">
-                        Punktacja: {exactPts} pkt za dokładny wynik,{" "}
-                        {outcomePts} pkt za trafiony wynik
-                    </p>
-                </div>
+                <p className="text-sm text-muted-foreground">
+                    Punktacja: {exactPts} pkt za dokładny wynik, {outcomePts}{" "}
+                    pkt za trafiony wynik
+                </p>
                 {isAdmin ? (
                     <div className="flex flex-wrap gap-2">
                         <EditTournamentDialog

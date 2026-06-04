@@ -1,5 +1,6 @@
 import type { FC } from "react";
 
+import { PageHeader } from "@/components/ui/page-header";
 import { Separator } from "@/components/ui/separator";
 
 import { CreateTournamentDialog } from "@/features/tournament/components/create-tournament-dialog";
@@ -13,14 +14,10 @@ interface Props {
 export const TournamentsOverview: FC<Props> = ({ sections }) => {
     return (
         <div className="flex flex-col gap-8">
-            <div className="flex flex-col gap-2">
-                <h1 className="font-heading text-2xl font-semibold tracking-tight">
-                    Turnieje
-                </h1>
-                <p className="text-muted-foreground">
-                    Przeglądaj turnieje w grupach, do których należysz.
-                </p>
-            </div>
+            <PageHeader
+                header="Turnieje"
+                subHeader="Przeglądaj turnieje w grupach, do których należysz"
+            />
 
             {sections.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
