@@ -1,3 +1,4 @@
+import { BetResult } from "@prisma/client";
 import { describe, expect, it } from "vitest";
 
 import { buildGameBetRows } from "@/features/game/helpers/build-game-bet-rows";
@@ -40,15 +41,45 @@ describe("buildGameBetRows", () => {
             userId: "u2",
             homeScore: null,
             awayScore: null,
+            betResult: null,
         });
         expect(rows.find((row) => row.userId === "u1")).toMatchObject({
             homeScore: 2,
             awayScore: 1,
+            betResult: null,
         });
         expect(rows.find((row) => row.userId === "u3")).toMatchObject({
             homeScore: 0,
             awayScore: 0,
+            betResult: null,
         });
+    });
+
+    it("propagates betResult from game bets", () => {
+        const bets: GameBetRow[] = [
+            {
+                userId: "u1",
+                homeScore: 2,
+                awayScore: 1,
+                betResult: BetResult.EXACT_SCORE,
+            },
+            {
+                userId: "u2",
+                homeScore: 1,
+                awayScore: 1,
+                betResult: BetResult.CORRECT_OUTCOME,
+            },
+        ];
+
+        const rows = buildGameBetRows(members, bets, "u1");
+
+        expect(rows.find((row) => row.userId === "u1")?.betResult).toBe(
+            BetResult.EXACT_SCORE,
+        );
+        expect(rows.find((row) => row.userId === "u2")?.betResult).toBe(
+            BetResult.CORRECT_OUTCOME,
+        );
+        expect(rows.find((row) => row.userId === "u3")?.betResult).toBeNull();
     });
 
     it("marks the current user and leaves prediction empty when they did not bet", () => {
@@ -60,6 +91,7 @@ describe("buildGameBetRows", () => {
             isCurrentUser: true,
             homeScore: null,
             awayScore: null,
+            betResult: null,
         });
         expect(rows[1]?.isCurrentUser).toBe(false);
     });

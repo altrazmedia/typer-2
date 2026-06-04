@@ -4,6 +4,7 @@ import { useState, type FC } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { BetResultIndicator } from "@/features/game/components/bet-result-indicator";
 import type { GameBetTableRow } from "@/features/game/types";
 
 interface Props {
@@ -50,7 +51,14 @@ export const FinishedGameBetsSection: FC<Props> = ({ rows }) => {
                                           )
                                         : null}
                                 </TableCell>
-                                <TableCell />
+                                <TableCell>
+                                    {row.homeScore !== null &&
+                                    row.awayScore !== null ? (
+                                        <BetResultIndicator
+                                            betResult={row.betResult}
+                                        />
+                                    ) : null}
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
