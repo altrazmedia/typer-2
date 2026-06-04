@@ -37,7 +37,8 @@ Development uses a **local Postgres** (Docker) as the test database; production 
 
 - **Database**: Postgres in Docker via `docker-compose.yml` at the repo root (`postgres:16-alpine`).
 - **Env file**: `.env.local` — set `DATABASE_URL` to the local instance (see table below).
-- **Run**: `docker compose up -d` then `npm run dev` (Next.js dev server on `http://localhost:3000`).
+- **Run (host Next)**: `npm run local` — Postgres in Docker, migrations/seed on the host, `next dev` on the host; or `docker compose up -d` then `npm run dev`.
+- **Run (full Docker, optional)**: `npm run local:docker` — `docker-compose.dev.yml` adds an `app` service (migrate, seed, `next dev` with hot reload). Use when host dev is unreliable (e.g. WSL2/Turbopack). `DATABASE_URL` in the app container uses host `db`, not `localhost`.
 - **Migrations**: `prisma migrate dev` applies migrations to the local DB only.
 - **Seed**: `prisma db seed` (via `prisma/seed.ts`) loads a test admin user, one group, one tournament, and a couple of games for manual testing.
 
@@ -46,7 +47,7 @@ Development uses a **local Postgres** (Docker) as the test database; production 
 - **Database**: Neon serverless Postgres, connected through Vercel (e.g. Vercel Postgres integration or Neon dashboard connection string).
 - **Env**: Set in the Vercel project: `DATABASE_URL`, `AUTH_SECRET`, `NEXTAUTH_URL` (production URL).
 - **Migrations**: `prisma migrate deploy` in the production build (not `migrate dev`).
-- **Docker**: `docker-compose.yml` is for local use only; it is not run on Vercel.
+- **Docker**: `docker-compose.yml` / `docker-compose.dev.yml` are for local use only; they are not run on Vercel.
 
 ### Environment configuration
 
@@ -159,7 +160,9 @@ typer-2/
 │   ├── schema.prisma
 │   ├── migrations/
 │   └── seed.ts                         # Dev/test data (admin user, group, tournament, games)
-├── docker-compose.yml                  # Local Postgres only (not used in production)
+├── docker-compose.yml                  # Local Postgres (not used in production)
+├── docker-compose.dev.yml              # Optional full-stack dev overlay (app + db)
+├── Dockerfile.dev                      # Dev image for local:docker
 ├── proxy.ts                            # Route protection (Auth.js; Next.js 16)
 ├── tailwind.config.ts
 └── package.json

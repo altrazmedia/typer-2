@@ -6,13 +6,21 @@ Football betting app for a private group — see [docs/plans/2026-04-07-football
 
 1. **Environment** — copy `.env.example` to `.env` and `.env.local`, set `DATABASE_URL` and `AUTH_SECRET` (same values locally are fine for dev).
 
-2. **One-shot local stack** — Postgres (Docker), migrations, seed, and Next.js dev:
+2. **One-shot local stack** — Postgres (Docker), migrations, seed, and Next.js dev on the host:
 
     ```bash
     npm run local
     ```
 
     Open [http://localhost:3000](http://localhost:3000).
+
+    **WSL2 / Turbopack issues** — run the full stack in Docker (hot reload, webpack dev server):
+
+    ```bash
+    npm run local:docker
+    ```
+
+    Stop with `npm run local:docker:down`. `AUTH_SECRET` is taken from `.env` / `.env.local`; `DATABASE_URL` for the app container is set in `docker-compose.dev.yml` (`@db:5432`, not `localhost`).
 
 3. **Step by step** — if you prefer to run pieces yourself:
 
@@ -35,7 +43,9 @@ Football betting app for a private group — see [docs/plans/2026-04-07-football
 
 | Command              | Description                                                                     |
 | -------------------- | ------------------------------------------------------------------------------- |
-| `npm run local`      | Start Postgres, run migrations, seed, then Next.js dev (full local environment) |
+| `npm run local`      | Start Postgres, run migrations, seed, then Next.js dev on the host              |
+| `npm run local:docker` | Postgres + migrations + seed + Next.js dev, all in Docker (hot reload)      |
+| `npm run local:docker:down` | Stop full-stack Docker dev containers                                    |
 | `npm run db:up`      | Start Postgres in Docker and wait until it is healthy                           |
 | `npm run db:down`    | Stop and remove containers (volume kept)                                        |
 | `npm run db:migrate` | Apply migrations (`prisma migrate deploy`)                                      |
