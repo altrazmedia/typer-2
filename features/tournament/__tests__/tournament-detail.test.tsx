@@ -24,10 +24,17 @@ vi.mock("@/components/ui/tab-navigation", () => ({
 vi.mock("@/features/game/components/upcoming-game-card", () => ({
     UpcomingGameCard: ({
         game,
+        userBet,
     }: {
         game: { awayTeam: string; homeTeam: string; id: string };
+        userBet: { awayScore: number; homeScore: number } | null;
     }) => (
-        <div data-testid={`game-${game.id}`}>
+        <div
+            data-testid={`game-${game.id}`}
+            data-user-bet={
+                userBet ? `${userBet.homeScore}-${userBet.awayScore}` : "none"
+            }
+        >
             {game.homeTeam} — {game.awayTeam}
         </div>
     ),
@@ -81,7 +88,7 @@ function makeGameRow(
 }
 
 function makeTournamentDetail(
-    games: ReturnType<typeof makeGame>[],
+    games: TournamentGameRow[],
     isAdmin = false,
 ): TournamentDetail {
     const group = makeGroup({ name: "Grupa testowa" });
@@ -92,9 +99,13 @@ function makeTournamentDetail(
     });
     return {
         isAdmin,
+        groupMembers: [],
         tournament: {
             ...tournament,
-            group,
+            group: {
+                ...group,
+                members: [],
+            },
             games,
         },
     } as TournamentDetail;
@@ -106,6 +117,7 @@ describe("TournamentDetailView", () => {
         render(
             <TournamentDetailView
                 activeTab="upcoming"
+                currentUserId="user_test_1"
                 detail={detail}
                 finishedGames={[]}
                 leaderboard={[]}
@@ -128,6 +140,7 @@ describe("TournamentDetailView", () => {
         render(
             <TournamentDetailView
                 activeTab="upcoming"
+                currentUserId="user_test_1"
                 detail={detail}
                 finishedGames={[]}
                 leaderboard={[]}
@@ -149,6 +162,7 @@ describe("TournamentDetailView", () => {
         render(
             <TournamentDetailView
                 activeTab="upcoming"
+                currentUserId="user_test_1"
                 detail={detail}
                 finishedGames={[]}
                 leaderboard={[]}
@@ -160,11 +174,52 @@ describe("TournamentDetailView", () => {
         );
     });
 
+    it("passes only the current user bet to upcoming game cards", () => {
+        const g = {
+            ...makeGameRow({
+                awayTeam: "Goście",
+                homeTeam: "Gospodarze",
+                id: "game_u1",
+            }),
+            bets: [
+                {
+                    userId: "user_1",
+                    homeScore: 1,
+                    awayScore: 0,
+                    betResult: null,
+                },
+                {
+                    userId: "user_2",
+                    homeScore: 2,
+                    awayScore: 2,
+                    betResult: null,
+                },
+            ],
+        };
+        const detail = makeTournamentDetail([g]);
+        render(
+            <TournamentDetailView
+                activeTab="upcoming"
+                currentUserId="user_1"
+                detail={detail}
+                finishedGames={[]}
+                leaderboard={[]}
+                upcomingGames={[g]}
+            />,
+        );
+
+        expect(screen.getByTestId("game-game_u1")).toHaveAttribute(
+            "data-user-bet",
+            "1-0",
+        );
+    });
+
     it("shows empty copy for finished when there are no finished games", () => {
         const detail = makeTournamentDetail([]);
         render(
             <TournamentDetailView
                 activeTab="finished"
+                currentUserId="user_test_1"
                 detail={detail}
                 finishedGames={[]}
                 leaderboard={[]}
@@ -186,6 +241,7 @@ describe("TournamentDetailView", () => {
         render(
             <TournamentDetailView
                 activeTab="finished"
+                currentUserId="user_test_1"
                 detail={detail}
                 finishedGames={[g]}
                 leaderboard={[]}
@@ -218,6 +274,7 @@ describe("TournamentDetailView", () => {
         render(
             <TournamentDetailView
                 activeTab="leaderboard"
+                currentUserId="user_test_1"
                 detail={detail}
                 finishedGames={[]}
                 leaderboard={leaderboard}
@@ -250,6 +307,7 @@ describe("TournamentDetailView", () => {
         render(
             <TournamentDetailView
                 activeTab="leaderboard"
+                currentUserId="user_test_1"
                 detail={detail}
                 finishedGames={[g]}
                 leaderboard={[]}

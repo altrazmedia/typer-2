@@ -16,6 +16,7 @@ type TournamentGameRow = TournamentDetail["tournament"]["games"][number];
 
 interface Props {
     activeTab: TournamentGamesTab;
+    currentUserId: string;
     detail: TournamentDetail;
     finishedGames: TournamentGameRow[];
     leaderboard: LeaderboardEntry[];
@@ -24,12 +25,13 @@ interface Props {
 
 export const TournamentDetailView: FC<Props> = ({
     activeTab,
+    currentUserId,
     detail,
     finishedGames,
     leaderboard,
     upcomingGames,
 }) => {
-    const { tournament, isAdmin } = detail;
+    const { tournament, groupMembers, isAdmin } = detail;
     const exactPts = tournament.exactScorePoints;
     const outcomePts = tournament.correctOutcomePoints;
 
@@ -89,22 +91,38 @@ export const TournamentDetailView: FC<Props> = ({
                         <EmptyContentMessage message="Brak nadchodzących meczów." />
                     ) : (
                         <ul className="flex flex-col gap-4">
-                            {upcomingGames.map((game) => (
-                                <li key={game.id}>
-                                    <UpcomingGameCard
-                                        game={{
-                                            id: game.id,
-                                            homeTeam: game.homeTeam,
-                                            awayTeam: game.awayTeam,
-                                            kickoffAt: game.kickoffAt,
-                                            homeScore: game.homeScore,
-                                            awayScore: game.awayScore,
-                                        }}
-                                        userBet={game.bets?.[0] ?? null}
-                                        isAdmin={isAdmin}
-                                    />
-                                </li>
-                            ))}
+                            {upcomingGames.map((game) => {
+                                const currentUserBet =
+                                    game.bets.find(
+                                        (bet) => bet.userId === currentUserId,
+                                    ) ?? null;
+
+                                return (
+                                    <li key={game.id}>
+                                        <UpcomingGameCard
+                                            game={{
+                                                id: game.id,
+                                                homeTeam: game.homeTeam,
+                                                awayTeam: game.awayTeam,
+                                                kickoffAt: game.kickoffAt,
+                                                homeScore: game.homeScore,
+                                                awayScore: game.awayScore,
+                                            }}
+                                            userBet={
+                                                currentUserBet
+                                                    ? {
+                                                          homeScore:
+                                                              currentUserBet.homeScore,
+                                                          awayScore:
+                                                              currentUserBet.awayScore,
+                                                      }
+                                                    : null
+                                            }
+                                            isAdmin={isAdmin}
+                                        />
+                                    </li>
+                                );
+                            })}
                         </ul>
                     )
                 ) : activeTab === "finished" && finishedGames.length === 0 ? (
@@ -122,6 +140,9 @@ export const TournamentDetailView: FC<Props> = ({
                                         homeScore: game.homeScore,
                                         awayScore: game.awayScore,
                                     }}
+                                    groupMembers={groupMembers}
+                                    gameBets={game.bets}
+                                    currentUserId={currentUserId}
                                     isAdmin={isAdmin}
                                 />
                             </li>
