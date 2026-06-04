@@ -1,9 +1,10 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
+import type { Session } from "next-auth";
 import { afterEach, vi } from "vitest";
 import { mockReset } from "vitest-mock-extended";
 
-import { auth } from "@/lib/auth";
+import { getAuthMock } from "@/test/auth-mock";
 
 import { prisma } from "./prisma";
 import { mockRouter } from "./router";
@@ -11,7 +12,7 @@ import { mockRouter } from "./router";
 vi.mock("@/lib/db", () => import("./prisma"));
 
 vi.mock("@/lib/auth", () => ({
-    auth: vi.fn().mockResolvedValue(null),
+    auth: vi.fn<() => Promise<Session | null>>().mockResolvedValue(null),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -41,6 +42,6 @@ Object.defineProperty(window, "matchMedia", {
 afterEach(() => {
     mockReset(prisma);
     vi.clearAllMocks();
-    vi.mocked(auth).mockResolvedValue(null);
+    getAuthMock().mockResolvedValue(null);
     cleanup();
 });

@@ -1,21 +1,23 @@
 import type { Session } from "next-auth";
-import { auth } from "@/lib/auth";
-import { vi } from "vitest";
+
+import { getAuthMock } from "@/test/auth-mock";
 
 export function mockAuthedUser(overrides: {
     id: string;
     email?: string;
     name?: string;
 }): void {
-    vi.mocked(auth).mockResolvedValue({
+    const session: Session = {
         user: {
             id: overrides.id,
             email: overrides.email ?? "u@test.dev",
             name: overrides.name ?? "Test User",
         },
-    } as Session);
+        expires: new Date(Date.now() + 86_400_000).toISOString(),
+    };
+    getAuthMock().mockResolvedValue(session);
 }
 
 export function mockUnauthed(): void {
-    vi.mocked(auth).mockResolvedValue(null);
+    getAuthMock().mockResolvedValue(null);
 }

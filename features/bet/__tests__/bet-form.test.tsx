@@ -13,7 +13,7 @@ vi.mock("@/lib/toast", () => ({
 
 describe("BetForm", () => {
     let user: ReturnType<typeof userEvent.setup>;
-    let fetchSpy!: ReturnType<typeof vi.spyOn<typeof fetch>>;
+    let fetchSpy!: ReturnType<typeof vi.spyOn>;
 
     beforeEach(() => {
         user = userEvent.setup();
