@@ -9,7 +9,7 @@ export default function AppLayout({
 }>) {
     return (
         <div className="flex min-h-full flex-1 flex-col">
-            <header className="border-b border-border bg-card">
+            <header className="border-b border-border">
                 <div className="mx-auto flex h-14 max-w-4xl items-center justify-between gap-4 px-4">
                     <div className="flex items-center gap-6">
                         <Link

@@ -28,9 +28,12 @@ function formatBetLine(home: number, away: number): string {
     return `${home} - ${away}`;
 }
 
-const triggerClassName = cn(
-    "flex h-11 shrink-0 min-w-[4.75rem] items-center justify-center rounded-lg border bg-background px-3 font-heading text-base font-semibold tabular-nums ring-offset-background hover:bg-accent/50 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-);
+function getTriggerClassName(isBetPlaced: boolean): string {
+    return cn(
+        "flex h-11 shrink-0 min-w-[4.75rem] items-center justify-center rounded-lg border bg-background px-3 font-heading text-muted font-semibold tabular-nums ring-offset-background hover:bg-muted hover:text-foreground/50 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        isBetPlaced && "text-primary hover:text-primary/80",
+    );
+}
 
 export const BetForm: FC<Props> = ({ gameId, homeTeam, awayTeam, userBet }) => {
     const router = useRouter();
@@ -144,7 +147,7 @@ export const BetForm: FC<Props> = ({ gameId, homeTeam, awayTeam, userBet }) => {
                     aria-haspopup="dialog"
                     aria-label={`Twój typ: ${triggerLabel}`}
                     disabled={pending}
-                    className={triggerClassName}
+                    className={getTriggerClassName(userBet !== null)}
                     data-open={open ? "" : undefined}
                     onClick={() => handleOpenChange(true)}
                 >
@@ -167,7 +170,7 @@ export const BetForm: FC<Props> = ({ gameId, homeTeam, awayTeam, userBet }) => {
             <PopoverTrigger
                 aria-label={`Twój typ: ${triggerLabel}`}
                 disabled={pending}
-                className={triggerClassName}
+                className={getTriggerClassName(userBet !== null)}
                 type="button"
                 data-open={open ? "" : undefined}
             >

@@ -20,7 +20,9 @@ export const ScoreInput: FC<Props> = ({ label, value, onChange, disabled }) => {
 
     return (
         <div className="flex flex-col gap-2">
-            <Label htmlFor={groupId}>{label}</Label>
+            <Label htmlFor={groupId} className="text-base">
+                {label}
+            </Label>
             <div
                 id={groupId}
                 role="group"
@@ -31,11 +33,11 @@ export const ScoreInput: FC<Props> = ({ label, value, onChange, disabled }) => {
                     <Button
                         key={n}
                         type="button"
-                        size="sm"
+                        size="lg"
                         variant={value === n ? "default" : "outline"}
                         disabled={disabled}
                         className={cn(
-                            "min-w-8 tabular-nums",
+                            "min-w-8 px-4 tabular-nums",
                             value === n && "ring-2 ring-ring/50",
                         )}
                         onClick={() => onChange(n)}

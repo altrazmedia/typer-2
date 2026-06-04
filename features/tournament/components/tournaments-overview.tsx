@@ -50,12 +50,10 @@ export const TournamentsOverview: FC<Props> = ({ sections }) => {
                             ) : (
                                 <ul className="flex flex-col gap-3">
                                     {section.tournaments.map((t) => (
-                                        <li key={t.id}>
+                                        <li key={t.id} className="min-w-0">
                                             <TournamentCard
                                                 tournamentId={t.id}
                                                 name={t.name}
-                                                season={t.season}
-                                                gameCount={t.gameCount}
                                             />
                                         </li>
                                     ))}

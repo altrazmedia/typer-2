@@ -1,45 +1,24 @@
 import Link from "next/link";
 import type { FC } from "react";
 
-import { Badge } from "@/components/ui/badge";
-import {
-    Card,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 
 interface Props {
     tournamentId: string;
     name: string;
-    season: string | null;
-    gameCount: number;
 }
 
-export const TournamentCard: FC<Props> = ({
-    tournamentId,
-    name,
-    season,
-    gameCount,
-}) => {
+export const TournamentCard: FC<Props> = ({ tournamentId, name }) => {
     return (
         <Link
             href={`/tournaments/${tournamentId}`}
-            className="block rounded-xl"
+            className="group block w-full rounded-xl"
         >
-            <Card className="transition-colors hover:bg-muted/50">
-                <CardHeader className="gap-2">
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                        <CardTitle className="text-base">{name}</CardTitle>
-                        {season ? (
-                            <Badge variant="secondary" className="shrink-0">
-                                {season}
-                            </Badge>
-                        ) : null}
-                    </div>
-                    <CardDescription>
-                        {gameCount === 1 ? "1 mecz" : `${gameCount} meczów`}
-                    </CardDescription>
+            <Card className="flex h-full flex-col bg-linear-to-b from-primary to-primary/90 transition-[background-image] duration-300 group-hover:to-primary/80">
+                <CardHeader className="flex flex-1 flex-col justify-center gap-2">
+                    <h2 className="my-4 text-center text-xl font-semibold text-primary-foreground">
+                        {name}
+                    </h2>
                 </CardHeader>
             </Card>
         </Link>

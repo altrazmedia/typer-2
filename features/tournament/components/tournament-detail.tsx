@@ -39,24 +39,18 @@ export const TournamentDetailView: FC<Props> = ({
     return (
         <div className="flex flex-col gap-8">
             <PageHeader header={tournament.name} />
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <p className="text-sm text-muted-foreground">
-                    Punktacja: {exactPts} pkt za dokładny wynik, {outcomePts}{" "}
-                    pkt za trafiony wynik
-                </p>
-                {isAdmin ? (
-                    <div className="flex flex-wrap gap-2">
-                        <EditTournamentDialog
-                            tournamentId={tournament.id}
-                            initialName={tournament.name}
-                            initialSeason={tournament.season}
-                            initialExactScorePoints={exactPts}
-                            initialCorrectOutcomePoints={outcomePts}
-                        />
-                        <CreateGameDialog tournamentId={tournament.id} />
-                    </div>
-                ) : null}
-            </div>
+            {isAdmin ? (
+                <div className="flex flex-row justify-end gap-2">
+                    <EditTournamentDialog
+                        tournamentId={tournament.id}
+                        initialName={tournament.name}
+                        initialSeason={tournament.season}
+                        initialExactScorePoints={exactPts}
+                        initialCorrectOutcomePoints={outcomePts}
+                    />
+                    <CreateGameDialog tournamentId={tournament.id} />
+                </div>
+            ) : null}
 
             <div className="flex flex-col gap-4">
                 <Suspense
@@ -74,7 +68,11 @@ export const TournamentDetailView: FC<Props> = ({
                     />
                 </Suspense>
                 {activeTab === "leaderboard" ? (
-                    <LeaderboardTable leaderboard={leaderboard} />
+                    <LeaderboardTable
+                        leaderboard={leaderboard}
+                        exactScorePoints={exactPts}
+                        correctOutcomePoints={outcomePts}
+                    />
                 ) : activeTab === "upcoming" ? (
                     upcomingGames.length === 0 ? (
                         <EmptyContentMessage message="Brak nadchodzących meczów." />

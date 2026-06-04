@@ -11,7 +11,12 @@ export const SignOutButton: FC = () => {
                 await signOut({ redirectTo: "/login" });
             }}
         >
-            <Button type="submit" variant="outline" size="sm">
+            <Button
+                type="submit"
+                variant="outline"
+                size="sm"
+                className="bg-sidebar-primary text-sidebar-primary-foreground"
+            >
                 Wyloguj się
             </Button>
         </form>

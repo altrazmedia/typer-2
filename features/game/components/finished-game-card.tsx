@@ -1,6 +1,6 @@
 import type { FC } from "react";
 
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { FinishedGameBetsSection } from "@/features/game/components/finished-game-bets-section";
 import { EditGameDialog } from "@/features/game/components/edit-game-dialog";
@@ -11,6 +11,7 @@ import type {
     GameRow,
     GroupMemberRow,
 } from "@/features/game/types";
+import { formatKickoff } from "../helpers/format-kickoff";
 
 interface Props {
     game: GameRow;
@@ -32,31 +33,37 @@ export const FinishedGameCard: FC<Props> = ({
     return (
         <Card>
             <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 space-y-0">
-                <div className="space-y-1">
-                    <CardTitle className="text-base font-semibold">
-                        {game.homeTeam} {game.homeScore} – {game.awayScore}{" "}
+                <div className="flex min-w-0 flex-1 flex-col items-center gap-3">
+                    <p className="text-xs text-muted-foreground">
+                        {formatKickoff(game.kickoffAt)}
+                    </p>
+                    <CardTitle className="text-sm font-bold sm:text-lg">
+                        {game.homeTeam}{" "}
+                        <span className="text-primary">
+                            {game.homeScore} - {game.awayScore}
+                        </span>{" "}
                         {game.awayTeam}
                     </CardTitle>
                 </div>
-                {isAdmin ? (
-                    <div className="flex shrink-0 flex-wrap items-center gap-2">
-                        <EditGameDialog
-                            gameId={game.id}
-                            initialHomeTeam={game.homeTeam}
-                            initialAwayTeam={game.awayTeam}
-                            initialKickoffAt={game.kickoffAt}
-                        />
-                        <EditScoreDialog
-                            gameId={game.id}
-                            homeTeam={game.homeTeam}
-                            awayTeam={game.awayTeam}
-                            initialHomeScore={game.homeScore}
-                            initialAwayScore={game.awayScore}
-                        />
-                    </div>
-                ) : null}
             </CardHeader>
             <FinishedGameBetsSection rows={betRows} />
+            {isAdmin ? (
+                <CardFooter className="flex flex-row gap-2">
+                    <EditGameDialog
+                        gameId={game.id}
+                        initialHomeTeam={game.homeTeam}
+                        initialAwayTeam={game.awayTeam}
+                        initialKickoffAt={game.kickoffAt}
+                    />
+                    <EditScoreDialog
+                        gameId={game.id}
+                        homeTeam={game.homeTeam}
+                        awayTeam={game.awayTeam}
+                        initialHomeScore={game.homeScore}
+                        initialAwayScore={game.awayScore}
+                    />
+                </CardFooter>
+            ) : null}
         </Card>
     );
 };
