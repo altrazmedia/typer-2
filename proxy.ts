@@ -16,10 +16,5 @@ export const proxy = auth((req) => {
 
 export const config = {
     // Extend this list when adding more routes under app/(app)/ (route groups do not appear in URLs).
-    matcher: [
-        "/dashboard",
-        "/dashboard/:path*",
-        "/tournaments",
-        "/tournaments/:path*",
-    ],
+    matcher: ["/tournaments", "/tournaments/:path*"],
 };

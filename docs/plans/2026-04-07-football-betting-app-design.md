@@ -101,7 +101,6 @@ typer-2/
 │   │   └── register/page.tsx           # shim → features/auth RegisterForm
 │   ├── (app)/                          # Protected routes (require auth)
 │   │   ├── layout.tsx                  # Shared nav; imports SignOutButton from features/auth
-│   │   ├── dashboard/page.tsx          # Upcoming games + bet submission (shim)
 │   │   └── tournaments/
 │   │       ├── page.tsx                # shim → features/tournament TournamentsOverview
 │   │       └── [id]/
@@ -195,7 +194,7 @@ typer-2/
 
 - Users register with email + password; password stored as bcrypt hash
 - Auth.js Credentials provider validates credentials and issues a session cookie
-- `proxy.ts` protects app routes (e.g. `/dashboard`) — unauthenticated users are redirected to `/login`
+- `proxy.ts` protects app routes (e.g. `/tournaments`) — unauthenticated users are redirected to `/login`
 
 ### Add Member Flow
 
@@ -310,8 +309,8 @@ Execute the following phases in order. Each phase should be fully working before
 
 - Implement Auth.js Credentials provider in `lib/auth.ts` with bcrypt password check
 - Create `/register` page: form → POST to create `User` → redirect to login
-- Create `/login` page: form → Auth.js `signIn` → redirect to dashboard
-- Add `proxy.ts` (Next.js 16; replaces `middleware.ts`) to protect app routes such as `/dashboard`
+- Create `/login` page: form → Auth.js `signIn` → redirect to tournaments
+- Add `proxy.ts` (Next.js 16; replaces `middleware.ts`) to protect app routes such as `/tournaments`
 - Verify: can register, login, logout; protected routes redirect unauthenticated users
 
 ### Phase 3 — Groups & Members
@@ -335,7 +334,6 @@ Execute the following phases in order. Each phase should be fully working before
 
 ### Phase 5 — Betting UI
 
-- Build `/dashboard`: list of upcoming games (kickoff in future), sorted by kickoff date
 - Each game shows a `BetForm` component: two number inputs (home score, away score) + submit button
 - `BetForm` calls `POST /api/bets` (creates) or `PUT /api/bets` (updates); disabled after kickoff
 - Show existing bet if user has already bet on a game
@@ -403,7 +401,7 @@ Vercel Cron (hourly)
   → for each such user: fetch their PushSubscription rows
   → send push via web-push library
   → service worker shows: "Time to place your bet! Real Madrid vs Barça kicks off in Xh"
-  → user taps → opens /dashboard
+  → user taps → opens /tournaments
 ```
 
 #### New dependency
@@ -445,7 +443,7 @@ for each game:
   for each user in usersWithoutBet:
     subscriptions = PushSubscription.findMany({ where: { userId: user.userId } })
     for each sub:
-      sendPush(sub, { title: "Place your bet!", body: `${game.homeTeam} vs ${game.awayTeam}`, url: "/dashboard" })
+      sendPush(sub, { title: "Place your bet!", body: `${game.homeTeam} vs ${game.awayTeam}`, url: "/tournaments" })
       // if sendPush throws HTTP 410 → delete the stale subscription row
 ```
 
@@ -463,5 +461,5 @@ for each game:
 
 - After enabling notifications, a `PushSubscription` row exists in the DB for the user
 - Manually calling `/api/cron/notify-missing-bets` with the correct `Authorization` header triggers a push to devices with no bet
-- Tapping the notification opens `/dashboard`
+- Tapping the notification opens `/tournaments`
 - Disabling notifications deletes the subscription row

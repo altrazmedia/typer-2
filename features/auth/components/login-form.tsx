@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 export const LoginForm: FC = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
+    const callbackUrl = searchParams.get("callbackUrl") ?? "/";
 
     const [error, setError] = useState<string | null>(null);
     const [pending, setPending] = useState(false);
