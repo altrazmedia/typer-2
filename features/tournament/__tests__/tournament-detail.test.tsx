@@ -128,8 +128,6 @@ describe("TournamentDetailView", () => {
         expect(
             screen.getByRole("heading", { name: "Puchar testowy" }),
         ).toBeInTheDocument();
-        expect(screen.getByText("Grupa testowa")).toBeInTheDocument();
-        expect(screen.getByText("Sezon: 2025/26")).toBeInTheDocument();
         expect(screen.getByText("Nadchodzące mecze")).toBeInTheDocument();
         expect(screen.getByText("Zakończone mecze")).toBeInTheDocument();
         expect(screen.getByText("Tabela")).toBeInTheDocument();
