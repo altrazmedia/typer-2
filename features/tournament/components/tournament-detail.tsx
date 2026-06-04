@@ -7,8 +7,10 @@ import { CreateGameDialog } from "@/features/game/components/create-game-dialog"
 import { FinishedGameCard } from "@/features/game/components/finished-game-card";
 import { UpcomingGameCard } from "@/features/game/components/upcoming-game-card";
 import { EditTournamentDialog } from "@/features/tournament/components/edit-tournament-dialog";
+import { LeaderboardTable } from "@/features/tournament/components/leaderboard-table";
 import type { TournamentGamesTab } from "@/features/tournament/helpers/parse-tournament-games-tab";
 import type { TournamentDetail } from "@/features/tournament/server/get-tournament-detail";
+import type { LeaderboardEntry } from "@/features/tournament/types";
 
 type TournamentGameRow = TournamentDetail["tournament"]["games"][number];
 
@@ -16,6 +18,7 @@ interface Props {
     activeTab: TournamentGamesTab;
     detail: TournamentDetail;
     finishedGames: TournamentGameRow[];
+    leaderboard: LeaderboardEntry[];
     upcomingGames: TournamentGameRow[];
 }
 
@@ -23,6 +26,7 @@ export const TournamentDetailView: FC<Props> = ({
     activeTab,
     detail,
     finishedGames,
+    leaderboard,
     upcomingGames,
 }) => {
     const { tournament, isAdmin } = detail;
@@ -64,7 +68,6 @@ export const TournamentDetailView: FC<Props> = ({
             </div>
 
             <div className="flex flex-col gap-4">
-                <h2 className="font-heading text-lg font-semibold">Mecze</h2>
                 <Suspense
                     fallback={
                         <div className="inline-flex h-8 w-fit min-w-[200px] rounded-lg bg-muted p-[3px]" />
@@ -75,10 +78,13 @@ export const TournamentDetailView: FC<Props> = ({
                         tabs={[
                             { label: "Nadchodzące mecze", value: "upcoming" },
                             { label: "Zakończone mecze", value: "finished" },
+                            { label: "Tabela", value: "leaderboard" },
                         ]}
                     />
                 </Suspense>
-                {activeTab === "upcoming" ? (
+                {activeTab === "leaderboard" ? (
+                    <LeaderboardTable leaderboard={leaderboard} />
+                ) : activeTab === "upcoming" ? (
                     upcomingGames.length === 0 ? (
                         <EmptyContentMessage message="Brak nadchodzących meczów." />
                     ) : (
@@ -101,9 +107,9 @@ export const TournamentDetailView: FC<Props> = ({
                             ))}
                         </ul>
                     )
-                ) : finishedGames.length === 0 ? (
+                ) : activeTab === "finished" && finishedGames.length === 0 ? (
                     <EmptyContentMessage message="Brak zakończonych meczów." />
-                ) : (
+                ) : activeTab === "finished" ? (
                     <ul className="flex flex-col gap-4">
                         {finishedGames.map((game) => (
                             <li key={game.id}>
@@ -121,7 +127,7 @@ export const TournamentDetailView: FC<Props> = ({
                             </li>
                         ))}
                     </ul>
-                )}
+                ) : null}
             </div>
         </div>
     );

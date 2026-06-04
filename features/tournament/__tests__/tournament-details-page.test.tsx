@@ -3,11 +3,30 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { TournamentDetailsPage } from "@/features/tournament/pages/tournament-details-page";
 import { getTournamentDetailForUser } from "@/features/tournament/server/get-tournament-detail";
+import { getTournamentLeaderboard } from "@/features/tournament/server/get-tournament-leaderboard";
 import { mockAuthedUser, mockUnauthed } from "@/test/auth";
 import { makeGame, makeGroup, makeTournament } from "@/test/factories";
 
 vi.mock("@/features/tournament/server/get-tournament-detail", () => ({
     getTournamentDetailForUser: vi.fn(),
+}));
+
+vi.mock("@/features/tournament/server/get-tournament-leaderboard", () => ({
+    getTournamentLeaderboard: vi.fn(),
+}));
+
+vi.mock("@/features/tournament/components/leaderboard-table", () => ({
+    LeaderboardTable: ({
+        leaderboard,
+    }: {
+        leaderboard: { name: string; rank: number }[];
+    }) => (
+        <div data-testid="leaderboard-table">
+            {leaderboard.map((entry) => (
+                <span key={entry.rank}>{entry.name}</span>
+            ))}
+        </div>
+    ),
 }));
 
 vi.mock("@/components/ui/tab-navigation", () => ({
@@ -197,5 +216,61 @@ describe("TournamentDetailsPage", () => {
         expect(
             screen.queryByText("Future Home vs Future Away"),
         ).not.toBeInTheDocument();
+    });
+
+    it("fetches leaderboard and shows table when ?tab=leaderboard", async () => {
+        mockAuthedUser({ id: "user_1" });
+        const group = makeGroup();
+        const tournament = makeTournament({ groupId: group.id });
+        vi.mocked(getTournamentDetailForUser).mockResolvedValue({
+            isAdmin: false,
+            tournament: {
+                ...tournament,
+                group,
+                games: [],
+            },
+        } as Awaited<ReturnType<typeof getTournamentDetailForUser>>);
+        vi.mocked(getTournamentLeaderboard).mockResolvedValue([
+            {
+                rank: 1,
+                userId: "user_1",
+                name: "Jan Kowalski",
+                exactScoreBets: 2,
+                correctOutcomeBets: 1,
+                totalPoints: 9,
+            },
+        ]);
+
+        const element = await TournamentDetailsPage({
+            params: Promise.resolve({ id: tournament.id }),
+            searchParams: Promise.resolve({ tab: "leaderboard" }),
+        });
+        render(element);
+
+        expect(getTournamentLeaderboard).toHaveBeenCalledWith(tournament.id);
+        expect(screen.getByTestId("leaderboard-table")).toBeInTheDocument();
+        expect(screen.getByText("Jan Kowalski")).toBeInTheDocument();
+        expect(screen.getByText("Tabela")).toBeInTheDocument();
+    });
+
+    it("does not fetch leaderboard on default tab", async () => {
+        mockAuthedUser({ id: "user_1" });
+        const group = makeGroup();
+        const tournament = makeTournament({ groupId: group.id });
+        vi.mocked(getTournamentDetailForUser).mockResolvedValue({
+            isAdmin: false,
+            tournament: {
+                ...tournament,
+                group,
+                games: [],
+            },
+        } as Awaited<ReturnType<typeof getTournamentDetailForUser>>);
+
+        await TournamentDetailsPage({
+            params: Promise.resolve({ id: tournament.id }),
+            searchParams: Promise.resolve({}),
+        });
+
+        expect(getTournamentLeaderboard).not.toHaveBeenCalled();
     });
 });
