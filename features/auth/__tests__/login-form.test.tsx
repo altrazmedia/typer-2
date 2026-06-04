@@ -40,10 +40,10 @@ describe("LoginForm", () => {
                 email: "a@b.c",
                 password: "secret",
                 redirect: false,
-                callbackUrl: "/dashboard",
+                callbackUrl: "/",
             });
         });
-        expect(mockRouter.push).toHaveBeenCalledWith("/dashboard");
+        expect(mockRouter.push).toHaveBeenCalledWith("/");
         expect(mockRouter.refresh).toHaveBeenCalled();
     });
 
