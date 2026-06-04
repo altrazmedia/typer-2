@@ -20,6 +20,7 @@ export function buildGameBetRows(
             isCurrentUser: member.userId === currentUserId,
             homeScore: bet?.homeScore ?? null,
             awayScore: bet?.awayScore ?? null,
+            betResult: bet?.betResult ?? null,
         };
     });
 

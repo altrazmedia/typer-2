@@ -27,4 +27,5 @@ export interface GameBetTableRow {
     isCurrentUser: boolean;
     homeScore: number | null;
     awayScore: number | null;
+    betResult: BetResult | null;
 }
