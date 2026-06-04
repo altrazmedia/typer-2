@@ -5,6 +5,8 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
     plugins: [react()],
+    // Avoid loading postcss.config.mjs (@tailwindcss/postcss native binary SIGBUS on WSL).
+    css: { postcss: { plugins: [] } },
     resolve: {
         tsconfigPaths: true,
         alias: {

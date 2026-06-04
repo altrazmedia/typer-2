@@ -218,7 +218,7 @@ describe("TournamentDetailsPage", () => {
         ).not.toBeInTheDocument();
     });
 
-    it("fetches leaderboard and shows table when ?tab=tabela", async () => {
+    it("fetches leaderboard and shows table when ?tab=leaderboard", async () => {
         mockAuthedUser({ id: "user_1" });
         const group = makeGroup();
         const tournament = makeTournament({ groupId: group.id });
@@ -243,7 +243,7 @@ describe("TournamentDetailsPage", () => {
 
         const element = await TournamentDetailsPage({
             params: Promise.resolve({ id: tournament.id }),
-            searchParams: Promise.resolve({ tab: "tabela" }),
+            searchParams: Promise.resolve({ tab: "leaderboard" }),
         });
         render(element);
 
