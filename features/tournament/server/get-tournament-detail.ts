@@ -17,12 +17,25 @@ export async function getTournamentDetailForUser(
                 orderBy: { kickoffAt: "asc" },
                 include: {
                     bets: {
-                        where: { userId },
-                        select: { homeScore: true, awayScore: true },
+                        select: {
+                            userId: true,
+                            homeScore: true,
+                            awayScore: true,
+                            betResult: true,
+                        },
                     },
                 },
             },
-            group: true,
+            group: {
+                include: {
+                    members: {
+                        select: {
+                            userId: true,
+                            user: { select: { name: true } },
+                        },
+                    },
+                },
+            },
         },
     });
 
@@ -37,8 +50,14 @@ export async function getTournamentDetailForUser(
 
     if (!membership) return null;
 
+    const groupMembers = tournament.group.members.map((member) => ({
+        userId: member.userId,
+        name: member.user.name,
+    }));
+
     return {
         tournament,
+        groupMembers,
         isAdmin: membership.isAdmin,
     };
 }

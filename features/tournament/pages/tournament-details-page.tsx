@@ -43,6 +43,7 @@ export async function TournamentDetailsPage({ params, searchParams }: Props) {
     return (
         <TournamentDetailView
             detail={detail}
+            currentUserId={session.user.id}
             activeTab={activeTab}
             finishedGames={finishedGames}
             upcomingGames={upcomingGames}

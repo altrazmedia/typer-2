@@ -140,9 +140,13 @@ describe("TournamentDetailsPage", () => {
         });
         vi.mocked(getTournamentDetailForUser).mockResolvedValue({
             isAdmin: false,
+            groupMembers: [],
             tournament: {
                 ...tournament,
-                group,
+                group: {
+                    ...group,
+                    members: [],
+                },
                 games: [
                     {
                         ...pastGame,
@@ -190,9 +194,13 @@ describe("TournamentDetailsPage", () => {
         });
         vi.mocked(getTournamentDetailForUser).mockResolvedValue({
             isAdmin: false,
+            groupMembers: [],
             tournament: {
                 ...tournament,
-                group,
+                group: {
+                    ...group,
+                    members: [],
+                },
                 games: [
                     {
                         ...pastGame,
@@ -224,9 +232,13 @@ describe("TournamentDetailsPage", () => {
         const tournament = makeTournament({ groupId: group.id });
         vi.mocked(getTournamentDetailForUser).mockResolvedValue({
             isAdmin: false,
+            groupMembers: [],
             tournament: {
                 ...tournament,
-                group,
+                group: {
+                    ...group,
+                    members: [],
+                },
                 games: [],
             },
         } as Awaited<ReturnType<typeof getTournamentDetailForUser>>);
@@ -259,9 +271,13 @@ describe("TournamentDetailsPage", () => {
         const tournament = makeTournament({ groupId: group.id });
         vi.mocked(getTournamentDetailForUser).mockResolvedValue({
             isAdmin: false,
+            groupMembers: [],
             tournament: {
                 ...tournament,
-                group,
+                group: {
+                    ...group,
+                    members: [],
+                },
                 games: [],
             },
         } as Awaited<ReturnType<typeof getTournamentDetailForUser>>);
