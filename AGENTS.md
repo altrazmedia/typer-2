@@ -28,7 +28,6 @@ Before commiting any code:
 - make sure all logic changes are covered with tests
 - make sure all tests are passing
 
-
 # Project structure
 
 All feature-specific code lives under `features/<feature>/` — never inside `app/api/*`, never inside `components/*` (except `components/ui/` which is shadcn primitives), never inline in `app/(app)/*/page.tsx`.
@@ -40,7 +39,6 @@ All feature-specific code lives under `features/<feature>/` — never inside `ap
 - `api/` — API route handlers extracted from `app/api/*/route.ts`; every file starts with `import "server-only"`
 - `schema.ts` — request-body validators (the `parseCreateBody`-style functions)
 - `types.ts` — feature-local TypeScript types
-
 
 **Routing glue in `app/`**:
 

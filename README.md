@@ -4,7 +4,6 @@ Football betting app for a private group. Planned and implemented fully with AI 
 
 ## Local setup
 
-
 1. **Environment** — copy `.env.example` to `.env` and `.env.local`, set `DATABASE_URL` and `AUTH_SECRET` (same values locally are fine for dev).
 
 2. **One-shot local stack** — Postgres (Docker), migrations, seed, and Next.js dev on the host:
@@ -21,7 +20,7 @@ Football betting app for a private group. Planned and implemented fully with AI 
     npm run local:docker
     ```
 
-4. **Optional** — `npm run studio` to inspect data in Prisma Studio.
+3. **Optional** — `npm run studio` to inspect data in Prisma Studio.
 
 ### Seed data
 
