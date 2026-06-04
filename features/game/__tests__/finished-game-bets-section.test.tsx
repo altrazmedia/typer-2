@@ -71,7 +71,7 @@ const resultRows: GameBetTableRow[] = [
 async function expandSection() {
     const user = userEvent.setup();
     render(<FinishedGameBetsSection rows={resultRows} />);
-    await user.click(screen.getByRole("button", { name: "Pokaż typowania" }));
+    await user.click(screen.getByRole("button", { name: "Pokaż typy" }));
     return user;
 }
 
@@ -80,7 +80,7 @@ describe("FinishedGameBetsSection", () => {
         render(<FinishedGameBetsSection rows={rows} />);
 
         expect(
-            screen.getByRole("button", { name: "Pokaż typowania" }),
+            screen.getByRole("button", { name: "Pokaż typy" }),
         ).toBeInTheDocument();
         expect(screen.queryByText("Jan Kowalski")).not.toBeInTheDocument();
         expect(screen.queryByText("Anna Nowak")).not.toBeInTheDocument();
@@ -90,23 +90,19 @@ describe("FinishedGameBetsSection", () => {
         const user = userEvent.setup();
         render(<FinishedGameBetsSection rows={rows} />);
 
-        await user.click(
-            screen.getByRole("button", { name: "Pokaż typowania" }),
-        );
+        await user.click(screen.getByRole("button", { name: "Pokaż typy" }));
 
         expect(
-            screen.getByRole("button", { name: "Ukryj typowania" }),
+            screen.getByRole("button", { name: "Ukryj typy" }),
         ).toBeInTheDocument();
         expect(screen.getByText("Jan Kowalski")).toBeInTheDocument();
         expect(screen.getByText("Anna Nowak")).toBeInTheDocument();
         expect(screen.getByText("2 - 1")).toBeInTheDocument();
 
-        await user.click(
-            screen.getByRole("button", { name: "Ukryj typowania" }),
-        );
+        await user.click(screen.getByRole("button", { name: "Ukryj typy" }));
 
         expect(
-            screen.getByRole("button", { name: "Pokaż typowania" }),
+            screen.getByRole("button", { name: "Pokaż typy" }),
         ).toBeInTheDocument();
         expect(screen.queryByText("Jan Kowalski")).not.toBeInTheDocument();
     });

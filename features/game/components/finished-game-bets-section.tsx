@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useState, type FC } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -19,14 +20,20 @@ export const FinishedGameBetsSection: FC<Props> = ({ rows }) => {
     const [expanded, setExpanded] = useState(false);
 
     return (
-        <div className="border-t px-6 py-4">
+        <div className="flex flex-col items-center px-6">
             <Button
                 type="button"
                 variant="ghost"
                 size="sm"
                 onClick={() => setExpanded((value) => !value)}
+                className="text-muted-foreground"
             >
-                {expanded ? "Ukryj typowania" : "Pokaż typowania"}
+                {expanded ? "Ukryj typy" : "Pokaż typy"}
+                {expanded ? (
+                    <ChevronUpIcon className="size-4" />
+                ) : (
+                    <ChevronDownIcon className="size-4" />
+                )}
             </Button>
             {expanded ? (
                 <Table className="mt-3">

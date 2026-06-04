@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { SignOutButton } from "@/features/auth/components/sign-out-button";
+import { HeaderUserMenu } from "@/features/auth/components/header-user-menu";
 
 export default function AppLayout({
     children,
@@ -9,7 +9,7 @@ export default function AppLayout({
 }>) {
     return (
         <div className="flex min-h-full flex-1 flex-col">
-            <header className="border-b border-border bg-card">
+            <header className="border-b border-border">
                 <div className="mx-auto flex h-14 max-w-4xl items-center justify-between gap-4 px-4">
                     <div className="flex items-center gap-6">
                         <Link
@@ -19,7 +19,7 @@ export default function AppLayout({
                             Typer
                         </Link>
                     </div>
-                    <SignOutButton />
+                    <HeaderUserMenu />
                 </div>
             </header>
             <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
