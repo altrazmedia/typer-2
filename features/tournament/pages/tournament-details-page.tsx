@@ -1,8 +1,10 @@
 import { notFound, redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import { auth } from "@/lib/auth";
 
 import { TournamentDetailView } from "@/features/tournament/components/tournament-detail";
+import { TournamentDetailsFallback } from "@/features/tournament/components/tournament-details-fallback";
 import { classifyGames } from "@/features/tournament/helpers/classify-games";
 import { parseTournamentGamesTab } from "@/features/tournament/helpers/parse-tournament-games-tab";
 import { getTournamentDetailForUser } from "@/features/tournament/server/get-tournament-detail";
@@ -13,7 +15,21 @@ interface Props {
     searchParams: Promise<{ tab?: string | string[] }>;
 }
 
-export async function TournamentDetailsPage({ params, searchParams }: Props) {
+export function TournamentDetailsPage({ params, searchParams }: Props) {
+    return (
+        <Suspense fallback={<TournamentDetailsFallback />}>
+            <TournamentDetailsContent
+                params={params}
+                searchParams={searchParams}
+            />
+        </Suspense>
+    );
+}
+
+export async function TournamentDetailsContent({
+    params,
+    searchParams,
+}: Props) {
     const { id: tournamentId } = await params;
     const { tab: tabParam } = await searchParams;
     const session = await auth();
