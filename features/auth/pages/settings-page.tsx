@@ -1,10 +1,19 @@
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import { auth } from "@/lib/auth";
 
 import { ApiKeySection } from "@/features/auth/components/api-key-section";
 
-export async function SettingsPage() {
+export function SettingsPage() {
+    return (
+        <Suspense>
+            <SettingsPageContent />
+        </Suspense>
+    );
+}
+
+async function SettingsPageContent() {
     const session = await auth();
     if (!session?.user?.id) {
         redirect("/login");
