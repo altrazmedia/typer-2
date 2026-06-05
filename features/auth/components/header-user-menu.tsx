@@ -1,6 +1,7 @@
 "use client";
 
-import { MenuIcon, MoonIcon, SunIcon } from "lucide-react";
+import { MenuIcon, MoonIcon, SettingsIcon, SunIcon } from "lucide-react";
+import Link from "next/link";
 import type { FC } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,10 @@ export const HeaderUserMenu: FC = () => {
                 >
                     {isDark ? <SunIcon /> : <MoonIcon />}
                     {isDark ? "Jasny motyw" : "Ciemny motyw"}
+                </DropdownMenuItem>
+                <DropdownMenuItem render={<Link href="/settings" />}>
+                    <SettingsIcon />
+                    Ustawienia
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <SignOutMenuItem />
