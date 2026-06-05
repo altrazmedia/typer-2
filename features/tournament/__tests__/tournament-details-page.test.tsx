@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { TournamentDetailsPage } from "@/features/tournament/pages/tournament-details-page";
+import { TournamentDetailsContent } from "@/features/tournament/pages/tournament-details-page";
 import { getTournamentDetailForUser } from "@/features/tournament/server/get-tournament-detail";
 import { getTournamentLeaderboard } from "@/features/tournament/server/get-tournament-leaderboard";
 import { mockAuthedUser, mockUnauthed } from "@/test/auth";
@@ -95,7 +95,7 @@ describe("TournamentDetailsPage", () => {
         });
 
         await expect(
-            TournamentDetailsPage({
+            TournamentDetailsContent({
                 params: Promise.resolve({ id: "t1" }),
                 searchParams: Promise.resolve({}),
             }),
@@ -113,7 +113,7 @@ describe("TournamentDetailsPage", () => {
         });
 
         await expect(
-            TournamentDetailsPage({
+            TournamentDetailsContent({
                 params: Promise.resolve({ id: "missing" }),
                 searchParams: Promise.resolve({}),
             }),
@@ -160,11 +160,12 @@ describe("TournamentDetailsPage", () => {
             },
         } as Awaited<ReturnType<typeof getTournamentDetailForUser>>);
 
-        const element = await TournamentDetailsPage({
-            params: Promise.resolve({ id: tournament.id }),
-            searchParams: Promise.resolve({}),
-        });
-        render(element);
+        render(
+            await TournamentDetailsContent({
+                params: Promise.resolve({ id: tournament.id }),
+                searchParams: Promise.resolve({}),
+            }),
+        );
 
         expect(
             screen.getByText("Future Home vs Future Away"),
@@ -214,11 +215,12 @@ describe("TournamentDetailsPage", () => {
             },
         } as Awaited<ReturnType<typeof getTournamentDetailForUser>>);
 
-        const element = await TournamentDetailsPage({
-            params: Promise.resolve({ id: tournament.id }),
-            searchParams: Promise.resolve({ tab: "finished" }),
-        });
-        render(element);
+        render(
+            await TournamentDetailsContent({
+                params: Promise.resolve({ id: tournament.id }),
+                searchParams: Promise.resolve({ tab: "finished" }),
+            }),
+        );
 
         expect(screen.getByText("Past Home vs Past Away")).toBeInTheDocument();
         expect(
@@ -253,11 +255,12 @@ describe("TournamentDetailsPage", () => {
             },
         ]);
 
-        const element = await TournamentDetailsPage({
-            params: Promise.resolve({ id: tournament.id }),
-            searchParams: Promise.resolve({ tab: "leaderboard" }),
-        });
-        render(element);
+        render(
+            await TournamentDetailsContent({
+                params: Promise.resolve({ id: tournament.id }),
+                searchParams: Promise.resolve({ tab: "leaderboard" }),
+            }),
+        );
 
         expect(getTournamentLeaderboard).toHaveBeenCalledWith(tournament.id);
         expect(screen.getByTestId("leaderboard-table")).toBeInTheDocument();
@@ -282,7 +285,7 @@ describe("TournamentDetailsPage", () => {
             },
         } as Awaited<ReturnType<typeof getTournamentDetailForUser>>);
 
-        await TournamentDetailsPage({
+        await TournamentDetailsContent({
             params: Promise.resolve({ id: tournament.id }),
             searchParams: Promise.resolve({}),
         });
