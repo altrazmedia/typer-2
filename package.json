@@ -15,6 +15,7 @@
         "db:prepare": "prisma migrate deploy && prisma db seed",
         "studio": "prisma studio",
         "build": "next build",
+        "vercel-build": "prisma migrate deploy && next build",
         "start": "next start",
         "lint": "eslint .",
         "prettier:fix": "prettier --write .",
