@@ -7,7 +7,7 @@ import { requireAuth } from "@/lib/api-utils";
 import { prisma } from "@/lib/db";
 
 export async function placeBet(request: Request) {
-    const authResult = await requireAuth();
+    const authResult = await requireAuth(request);
     if (!authResult.ok) {
         return authResult.response;
     }

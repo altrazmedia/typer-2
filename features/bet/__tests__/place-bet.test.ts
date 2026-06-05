@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { placeBet } from "@/features/bet/api/place-bet";
-import { mockAuthedUser, mockUnauthed } from "@/test/auth";
+import { mockApiKeyAuth, mockAuthedUser, mockUnauthed } from "@/test/auth";
 import { makeBet, makeGame } from "@/test/factories";
 import { prisma } from "@/test/prisma";
 import { makeJsonRequest } from "@/test/request";
@@ -10,6 +10,7 @@ import { readJson } from "@/test/response";
 describe("placeBet", () => {
     it("returns 401 when unauthenticated", async () => {
         mockUnauthed();
+        prisma.apiKey.findUnique.mockResolvedValue(null);
         const req = makeJsonRequest({
             gameId: "g1",
             homeScore: 1,
@@ -151,5 +152,36 @@ describe("placeBet", () => {
                 awayScore: 2,
             },
         });
+    });
+
+    it("returns 200 when authenticated via API key", async () => {
+        const rawKey = mockApiKeyAuth({ id: "u1" });
+        const futureKickoff = new Date(Date.now() + 3_600_000);
+        prisma.game.findUnique.mockResolvedValue(
+            makeGame({ id: "g_api", kickoffAt: futureKickoff }),
+        );
+        prisma.bet.upsert.mockResolvedValue(
+            makeBet({
+                id: "bet_api",
+                gameId: "g_api",
+                userId: "u1",
+                homeScore: 1,
+                awayScore: 0,
+            }),
+        );
+
+        const req = makeJsonRequest(
+            {
+                gameId: "g_api",
+                homeScore: 1,
+                awayScore: 0,
+            },
+            { headers: { "X-API-Key": rawKey } },
+        );
+        const res = await placeBet(req);
+        const { status, body } = await readJson(res);
+
+        expect(status).toBe(200);
+        expect(body).toEqual({ homeScore: 1, awayScore: 0 });
     });
 });

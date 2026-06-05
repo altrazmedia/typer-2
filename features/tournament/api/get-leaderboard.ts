@@ -11,8 +11,8 @@ interface RouteContext {
     params: Promise<{ id: string }>;
 }
 
-export async function getLeaderboard(_request: Request, context: RouteContext) {
-    const authResult = await requireAuth();
+export async function getLeaderboard(request: Request, context: RouteContext) {
+    const authResult = await requireAuth(request);
     if (!authResult.ok) {
         return authResult.response;
     }

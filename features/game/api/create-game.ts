@@ -8,7 +8,7 @@ import { prisma } from "@/lib/db";
 import { parseCreateGameBody } from "@/features/game/schema";
 
 export async function createGame(request: Request) {
-    const authResult = await requireAuth();
+    const authResult = await requireAuth(request);
     if (!authResult.ok) {
         return authResult.response;
     }

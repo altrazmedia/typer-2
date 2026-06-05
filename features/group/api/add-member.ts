@@ -12,7 +12,7 @@ interface RouteContext {
 }
 
 export async function addGroupMember(request: Request, context: RouteContext) {
-    const authResult = await requireAuth();
+    const authResult = await requireAuth(request);
     if (!authResult.ok) {
         return authResult.response;
     }
