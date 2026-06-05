@@ -1,10 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import {
-    TournamentsPage,
-    TournamentsPageContent,
-} from "@/features/tournament/pages/tournaments-page";
+import { TournamentsPageContent } from "@/features/tournament/pages/tournaments-page";
 import { listTournamentsForUser } from "@/features/tournament/server/list-tournaments-for-user";
 import { mockAuthedUser, mockUnauthed } from "@/test/auth";
 
@@ -29,7 +26,7 @@ describe("TournamentsPage", () => {
         expect(redirect).toHaveBeenCalledWith("/login");
     });
 
-    it("renders tournament sections inside Suspense", async () => {
+    it("renders tournament sections for authenticated user", async () => {
         mockAuthedUser({ id: "user_1" });
         vi.mocked(listTournamentsForUser).mockResolvedValue([
             {
@@ -47,9 +44,9 @@ describe("TournamentsPage", () => {
             },
         ]);
 
-        render(<TournamentsPage />);
+        render(await TournamentsPageContent());
 
-        expect(await screen.findByText("Turnieje")).toBeInTheDocument();
+        expect(screen.getByText("Turnieje")).toBeInTheDocument();
         expect(screen.getByText("Liga 2026")).toBeInTheDocument();
         expect(screen.getByText("Grupa testowa")).toBeInTheDocument();
     });

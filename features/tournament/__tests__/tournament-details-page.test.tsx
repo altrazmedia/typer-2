@@ -1,10 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-    TournamentDetailsContent,
-    TournamentDetailsPage,
-} from "@/features/tournament/pages/tournament-details-page";
+import { TournamentDetailsContent } from "@/features/tournament/pages/tournament-details-page";
 import { getTournamentDetailForUser } from "@/features/tournament/server/get-tournament-detail";
 import { getTournamentLeaderboard } from "@/features/tournament/server/get-tournament-leaderboard";
 import { mockAuthedUser, mockUnauthed } from "@/test/auth";
@@ -164,14 +161,14 @@ describe("TournamentDetailsPage", () => {
         } as Awaited<ReturnType<typeof getTournamentDetailForUser>>);
 
         render(
-            <TournamentDetailsPage
-                params={Promise.resolve({ id: tournament.id })}
-                searchParams={Promise.resolve({})}
-            />,
+            await TournamentDetailsContent({
+                params: Promise.resolve({ id: tournament.id }),
+                searchParams: Promise.resolve({}),
+            }),
         );
 
         expect(
-            await screen.findByText("Future Home vs Future Away"),
+            screen.getByText("Future Home vs Future Away"),
         ).toBeInTheDocument();
         expect(
             screen.queryByText("Past Home vs Past Away"),
@@ -219,15 +216,13 @@ describe("TournamentDetailsPage", () => {
         } as Awaited<ReturnType<typeof getTournamentDetailForUser>>);
 
         render(
-            <TournamentDetailsPage
-                params={Promise.resolve({ id: tournament.id })}
-                searchParams={Promise.resolve({ tab: "finished" })}
-            />,
+            await TournamentDetailsContent({
+                params: Promise.resolve({ id: tournament.id }),
+                searchParams: Promise.resolve({ tab: "finished" }),
+            }),
         );
 
-        expect(
-            await screen.findByText("Past Home vs Past Away"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("Past Home vs Past Away")).toBeInTheDocument();
         expect(
             screen.queryByText("Future Home vs Future Away"),
         ).not.toBeInTheDocument();
@@ -261,16 +256,14 @@ describe("TournamentDetailsPage", () => {
         ]);
 
         render(
-            <TournamentDetailsPage
-                params={Promise.resolve({ id: tournament.id })}
-                searchParams={Promise.resolve({ tab: "leaderboard" })}
-            />,
+            await TournamentDetailsContent({
+                params: Promise.resolve({ id: tournament.id }),
+                searchParams: Promise.resolve({ tab: "leaderboard" }),
+            }),
         );
 
         expect(getTournamentLeaderboard).toHaveBeenCalledWith(tournament.id);
-        expect(
-            await screen.findByTestId("leaderboard-table"),
-        ).toBeInTheDocument();
+        expect(screen.getByTestId("leaderboard-table")).toBeInTheDocument();
         expect(screen.getByText("Jan Kowalski")).toBeInTheDocument();
         expect(screen.getByText("Tabela")).toBeInTheDocument();
     });
