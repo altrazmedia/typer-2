@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
+import { generateApiKey } from "@/lib/api-key";
+
 const prisma = new PrismaClient();
 
 async function main() {
@@ -14,6 +16,13 @@ async function main() {
             name: "Test Admin",
             passwordHash,
         },
+    });
+
+    const { rawKey: adminApiKey, keyHash } = generateApiKey();
+    await prisma.apiKey.upsert({
+        where: { userId: admin.id },
+        create: { userId: admin.id, keyHash },
+        update: { keyHash, lastUsedAt: null },
     });
 
     const group = await prisma.group.upsert({
@@ -74,6 +83,7 @@ async function main() {
 
     console.log("Seed complete:", {
         adminEmail: admin.email,
+        adminApiKey,
         groupId: group.id,
         tournamentId: tournament.id,
     });

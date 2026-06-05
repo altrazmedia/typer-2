@@ -17,6 +17,17 @@ model User {
   groupMembers  GroupMember[]
   bets          Bet[]
   createdGroups Group[]       @relation("GroupCreator")
+  apiKey        ApiKey?
+}
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  userId     String    @unique
+  keyHash    String    @unique
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Group {

@@ -8,7 +8,7 @@ import { prisma } from "@/lib/db";
 import { parseCreateTournamentBody } from "@/features/tournament/schema";
 
 export async function createTournament(request: Request) {
-    const authResult = await requireAuth();
+    const authResult = await requireAuth(request);
     if (!authResult.ok) {
         return authResult.response;
     }

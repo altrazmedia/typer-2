@@ -1,11 +1,19 @@
 export function makeJsonRequest(
     body: unknown,
-    options: { method?: string; url?: string } = {},
+    options: {
+        method?: string;
+        url?: string;
+        headers?: Record<string, string>;
+    } = {},
 ): Request {
-    const { method = "POST", url = "http://test.local/api" } = options;
+    const {
+        method = "POST",
+        url = "http://test.local/api",
+        headers = {},
+    } = options;
     return new Request(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...headers },
         body: JSON.stringify(body),
     });
 }

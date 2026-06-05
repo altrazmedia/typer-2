@@ -24,6 +24,17 @@ model User {
   bets               Bet[]
   createdGroups      Group[]            @relation("GroupCreator")
   pushSubscriptions  PushSubscription[]
+  apiKey             ApiKey?
+}
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  userId     String    @unique
+  keyHash    String    @unique
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Group {
@@ -119,6 +130,7 @@ erDiagram
     User ||--o{ Bet : "places"
     User ||--o{ Group : "creates"
     User ||--o{ PushSubscription : "has"
+    User ||--o| ApiKey : "has"
 
     Group ||--o{ GroupMember : "has"
     Group ||--o{ Tournament : "has"
@@ -138,3 +150,6 @@ erDiagram
 | Bet result is nullable             | `betResult BetResult?` — null until result calculated                        |
 | Push subscription endpoint unique  | `@unique` on `PushSubscription.endpoint` — prevents duplicate registrations  |
 | Push subscriptions cascade-deleted | `onDelete: Cascade` — subscriptions are removed when a user is deleted       |
+| One API key per user               | `@unique` on `ApiKey.userId` — regenerate replaces the existing row          |
+| API key hash unique                | `@unique` on `ApiKey.keyHash` — lookup by hashed incoming `X-API-Key` header |
+| API keys cascade-deleted           | `onDelete: Cascade` — keys are removed when a user is deleted                |
