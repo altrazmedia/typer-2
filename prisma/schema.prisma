@@ -18,6 +18,32 @@ model User {
   bets          Bet[]
   createdGroups Group[]       @relation("GroupCreator")
   apiKey        ApiKey?
+  oauthCodes    OAuthCode[]
+}
+
+model OAuthClient {
+  id           String   @id @default(cuid())
+  clientName   String
+  redirectUris String[]
+  createdAt    DateTime @default(now())
+
+  codes OAuthCode[]
+}
+
+model OAuthCode {
+  id                  String      @id @default(cuid())
+  clientId            String
+  userId              String
+  code                String      @unique @default(cuid())
+  redirectUri         String
+  codeChallenge       String
+  codeChallengeMethod String      @default("S256")
+  expiresAt           DateTime
+  used                Boolean     @default(false)
+  createdAt           DateTime    @default(now())
+
+  client OAuthClient @relation(fields: [clientId], references: [id])
+  user   User        @relation(fields: [userId], references: [id])
 }
 
 model ApiKey {

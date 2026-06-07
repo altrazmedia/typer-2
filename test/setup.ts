@@ -27,21 +27,25 @@ vi.mock("next-auth/react", () => ({
     signIn: vi.fn(),
 }));
 
-Object.defineProperty(window, "matchMedia", {
-    writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-    })),
-});
+if (typeof window !== "undefined") {
+    Object.defineProperty(window, "matchMedia", {
+        writable: true,
+        value: vi.fn().mockImplementation((query: string) => ({
+            matches: false,
+            media: query,
+            onchange: null,
+            addEventListener: vi.fn(),
+            removeEventListener: vi.fn(),
+            dispatchEvent: vi.fn(),
+        })),
+    });
+}
 
 afterEach(() => {
     mockReset(prisma);
     vi.clearAllMocks();
     getAuthMock().mockResolvedValue(null);
-    cleanup();
+    if (typeof window !== "undefined") {
+        cleanup();
+    }
 });
