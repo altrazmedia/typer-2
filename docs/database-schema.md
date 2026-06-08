@@ -120,6 +120,31 @@ model PushSubscription {
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model OAuthClient {
+  id           String   @id @default(cuid())
+  clientName   String
+  redirectUris String[]
+  createdAt    DateTime @default(now())
+
+  codes OAuthCode[]
+}
+
+model OAuthCode {
+  id                  String      @id @default(cuid())
+  clientId            String
+  userId              String
+  code                String      @unique @default(cuid())
+  redirectUri         String
+  codeChallenge       String
+  codeChallengeMethod String      @default("S256")   // always "S256"
+  expiresAt           DateTime                       // 10-min TTL from issuance
+  used                Boolean     @default(false)    // one-time use
+  createdAt           DateTime    @default(now())
+
+  client OAuthClient @relation(fields: [clientId], references: [id])
+  user   User        @relation(fields: [userId], references: [id])
+}
 ```
 
 ## Entity Relationship Overview
@@ -131,6 +156,8 @@ erDiagram
     User ||--o{ Group : "creates"
     User ||--o{ PushSubscription : "has"
     User ||--o| ApiKey : "has"
+    User ||--o{ OAuthCode : "authorizes"
+    OAuthClient ||--o{ OAuthCode : "issues"
 
     Group ||--o{ GroupMember : "has"
     Group ||--o{ Tournament : "has"
@@ -153,3 +180,6 @@ erDiagram
 | One API key per user               | `@unique` on `ApiKey.userId` — regenerate replaces the existing row          |
 | API key hash unique                | `@unique` on `ApiKey.keyHash` — lookup by hashed incoming `X-API-Key` header |
 | API keys cascade-deleted           | `onDelete: Cascade` — keys are removed when a user is deleted                |
+| OAuth code unique                  | `@unique` on `OAuthCode.code` — prevents duplicate code issuance             |
+| OAuth code one-time use            | `used Boolean @default(false)` — marked true on first token exchange         |
+| OAuth code TTL                     | `expiresAt` set to `now + 10 min` at issuance; checked on token exchange     |

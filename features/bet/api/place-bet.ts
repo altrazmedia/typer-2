@@ -2,9 +2,9 @@ import "server-only";
 
 import { NextResponse } from "next/server";
 
+import { placeBetForUser } from "@/features/bet/server/place-bet";
 import { parsePlaceBetBody } from "@/features/bet/schema";
 import { requireAuth } from "@/lib/api-utils";
-import { prisma } from "@/lib/db";
 
 export async function placeBet(request: Request) {
     const authResult = await requireAuth(request);
@@ -31,40 +31,25 @@ export async function placeBet(request: Request) {
         );
     }
 
-    const game = await prisma.game.findUnique({ where: { id: parsed.gameId } });
-    if (!game) {
-        return NextResponse.json(
-            { error: "Mecz nie został znaleziony." },
-            { status: 404 },
-        );
-    }
+    const result = await placeBetForUser(
+        session.user.id,
+        parsed.gameId,
+        parsed.homeScore,
+        parsed.awayScore,
+    );
 
-    const now = new Date();
-    if (game.kickoffAt <= now) {
-        return NextResponse.json(
-            { error: "Nie można obstawiać meczu po rozpoczęciu." },
-            { status: 400 },
-        );
+    if (!result.ok) {
+        const status =
+            result.code === "NOT_FOUND"
+                ? 404
+                : result.code === "FORBIDDEN"
+                  ? 403
+                  : 400;
+        return NextResponse.json({ error: result.error }, { status });
     }
-
-    await prisma.bet.upsert({
-        where: {
-            gameId_userId: { gameId: parsed.gameId, userId: session.user.id },
-        },
-        create: {
-            gameId: parsed.gameId,
-            userId: session.user.id,
-            homeScore: parsed.homeScore,
-            awayScore: parsed.awayScore,
-        },
-        update: {
-            homeScore: parsed.homeScore,
-            awayScore: parsed.awayScore,
-        },
-    });
 
     return NextResponse.json({
-        homeScore: parsed.homeScore,
-        awayScore: parsed.awayScore,
+        homeScore: result.homeScore,
+        awayScore: result.awayScore,
     });
 }

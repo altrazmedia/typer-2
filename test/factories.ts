@@ -3,6 +3,8 @@ import type {
     Game,
     Group,
     GroupMember,
+    OAuthClient,
+    OAuthCode,
     Tournament,
     User,
 } from "@prisma/client";
@@ -86,6 +88,36 @@ export function makeBet(overrides: Partial<Bet> = {}): Bet {
         betResult: null,
         createdAt: now,
         updatedAt: now,
+        ...overrides,
+    };
+}
+
+export function makeOAuthClient(
+    overrides: Partial<OAuthClient> = {},
+): OAuthClient {
+    const now = new Date();
+    return {
+        id: "client_test_1",
+        clientName: "Test Client",
+        redirectUris: ["http://localhost:3001/callback"],
+        createdAt: now,
+        ...overrides,
+    };
+}
+
+export function makeOAuthCode(overrides: Partial<OAuthCode> = {}): OAuthCode {
+    const now = new Date();
+    return {
+        id: "code_test_1",
+        clientId: "client_test_1",
+        userId: "user_test_1",
+        code: "test_auth_code_value",
+        redirectUri: "http://localhost:3001/callback",
+        codeChallenge: "test_challenge",
+        codeChallengeMethod: "S256",
+        expiresAt: new Date(now.getTime() + 10 * 60 * 1000),
+        used: false,
+        createdAt: now,
         ...overrides,
     };
 }
