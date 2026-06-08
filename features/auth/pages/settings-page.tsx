@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { auth } from "@/lib/auth";
 
 import { ApiKeySection } from "@/features/auth/components/api-key-section";
+import { InstallPwaButton } from "@/features/pwa/components/install-pwa-button";
 
 export function SettingsPage() {
     return (
@@ -23,6 +24,7 @@ async function SettingsPageContent() {
         <div className="space-y-8">
             <h1 className="font-heading text-2xl font-semibold">Ustawienia</h1>
             <ApiKeySection />
+            <InstallPwaButton />
         </div>
     );
 }

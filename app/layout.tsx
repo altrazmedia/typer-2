@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 
 import { ToastProviderViewport } from "@/components/ui/toast";
@@ -20,6 +20,16 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     title: "Typer",
     description: "Prywatne typowanie wyników meczów",
+    manifest: "/manifest.webmanifest",
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: "default",
+        title: "Typer",
+    },
+};
+
+export const viewport: Viewport = {
+    themeColor: "#6c47ff",
 };
 
 export default function RootLayout({
