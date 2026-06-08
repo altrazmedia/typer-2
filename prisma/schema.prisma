@@ -14,11 +14,12 @@ model User {
   name         String
   createdAt    DateTime @default(now())
 
-  groupMembers  GroupMember[]
-  bets          Bet[]
-  createdGroups Group[]       @relation("GroupCreator")
-  apiKey        ApiKey?
-  oauthCodes    OAuthCode[]
+  groupMembers      GroupMember[]
+  bets              Bet[]
+  createdGroups     Group[]            @relation("GroupCreator")
+  apiKey            ApiKey?
+  oauthCodes        OAuthCode[]
+  pushSubscriptions PushSubscription[]
 }
 
 model OAuthClient {
@@ -127,4 +128,15 @@ model Bet {
   user User @relation(fields: [userId], references: [id])
 
   @@unique([gameId, userId])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

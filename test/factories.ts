@@ -5,6 +5,7 @@ import type {
     GroupMember,
     OAuthClient,
     OAuthCode,
+    PushSubscription,
     Tournament,
     User,
 } from "@prisma/client";
@@ -117,6 +118,21 @@ export function makeOAuthCode(overrides: Partial<OAuthCode> = {}): OAuthCode {
         codeChallengeMethod: "S256",
         expiresAt: new Date(now.getTime() + 10 * 60 * 1000),
         used: false,
+        createdAt: now,
+        ...overrides,
+    };
+}
+
+export function makePushSubscription(
+    overrides: Partial<PushSubscription> = {},
+): PushSubscription {
+    const now = new Date();
+    return {
+        id: "push_sub_test_1",
+        userId: "user_test_1",
+        endpoint: "https://push.example/subscription-1",
+        p256dh: "test_p256dh_key",
+        auth: "test_auth_key",
         createdAt: now,
         ...overrides,
     };

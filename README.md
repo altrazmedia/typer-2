@@ -6,6 +6,15 @@ Football betting app for a private group. Planned and implemented fully with AI 
 
 1. **Environment** — copy `.env.example` to `.env` and `.env.local`, set `DATABASE_URL` and `AUTH_SECRET` (same values locally are fine for dev).
 
+    For push notifications, also set:
+
+    | Variable                       | Description                                               |
+    | ------------------------------ | --------------------------------------------------------- |
+    | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Public VAPID key (`npx web-push generate-vapid-keys`)     |
+    | `VAPID_PRIVATE_KEY`            | Private VAPID key                                         |
+    | `VAPID_SUBJECT`                | Contact URI, e.g. `mailto:your@email.com`                 |
+    | `CRON_SECRET`                  | Random secret for cron endpoints (`openssl rand -hex 32`) |
+
 2. **One-shot local stack** — Postgres (Docker), migrations, seed, and Next.js dev on the host:
 
     ```bash
