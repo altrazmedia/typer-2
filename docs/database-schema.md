@@ -25,6 +25,7 @@ model User {
   createdGroups      Group[]            @relation("GroupCreator")
   pushSubscriptions  PushSubscription[]
   apiKey             ApiKey?
+  oauthCodes         OAuthCode[]
 }
 
 model ApiKey {

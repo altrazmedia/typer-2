@@ -1,0 +1,118 @@
+import "server-only";
+
+import { NextResponse } from "next/server";
+
+import { prisma } from "@/lib/db";
+import {
+    isStalePushSubscriptionError,
+    sendPushNotification,
+} from "@/lib/webpush";
+
+const NOTIFICATION_TITLE = "Czas na typowanie!";
+const NOTIFICATION_BODY = "Brakuje Twoich typów na dzisiejsze gierki";
+const NOTIFICATION_URL = "/tournaments";
+
+function verifyCronSecret(request: Request): boolean {
+    const secret = process.env.CRON_SECRET;
+    if (!secret) {
+        return false;
+    }
+
+    const authHeader = request.headers.get("Authorization");
+    return authHeader === `Bearer ${secret}`;
+}
+
+export async function notifyMissingBets(request: Request) {
+    if (!verifyCronSecret(request)) {
+        return NextResponse.json(
+            { error: "Brak autoryzacji." },
+            { status: 401 },
+        );
+    }
+
+    const now = new Date();
+    const in24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+    const games = await prisma.game.findMany({
+        where: {
+            kickoffAt: {
+                gte: now,
+                lte: in24Hours,
+            },
+        },
+        select: {
+            bets: {
+                select: {
+                    userId: true,
+                },
+            },
+            tournament: {
+                select: {
+                    group: {
+                        select: {
+                            members: {
+                                select: {
+                                    userId: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    const userIdsWithMissingBets = new Set<string>();
+
+    for (const game of games) {
+        const betUserIds = new Set(game.bets.map((bet) => bet.userId));
+
+        for (const member of game.tournament.group.members) {
+            if (!betUserIds.has(member.userId)) {
+                userIdsWithMissingBets.add(member.userId);
+            }
+        }
+    }
+
+    if (userIdsWithMissingBets.size === 0) {
+        return NextResponse.json({ sent: 0, removed: 0 });
+    }
+
+    const subscriptions = await prisma.pushSubscription.findMany({
+        where: {
+            userId: {
+                in: [...userIdsWithMissingBets],
+            },
+        },
+    });
+
+    let sent = 0;
+    let removed = 0;
+
+    for (const subscription of subscriptions) {
+        try {
+            await sendPushNotification(
+                {
+                    endpoint: subscription.endpoint,
+                    p256dh: subscription.p256dh,
+                    auth: subscription.auth,
+                },
+                {
+                    title: NOTIFICATION_TITLE,
+                    body: NOTIFICATION_BODY,
+                    url: NOTIFICATION_URL,
+                },
+            );
+            sent += 1;
+        } catch (error) {
+            if (isStalePushSubscriptionError(error)) {
+                await prisma.pushSubscription.delete({
+                    where: { id: subscription.id },
+                });
+                removed += 1;
+            }
+        }
+    }
+
+    return NextResponse.json({ sent, removed });
+}

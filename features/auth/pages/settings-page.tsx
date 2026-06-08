@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 
 import { ApiKeySection } from "@/features/auth/components/api-key-section";
 import { InstallPwaButton } from "@/features/pwa/components/install-pwa-button";
+import { NotificationToggle } from "@/features/pwa/components/notification-toggle";
 
 export function SettingsPage() {
     return (
@@ -24,6 +25,7 @@ async function SettingsPageContent() {
         <div className="space-y-8">
             <h1 className="font-heading text-2xl font-semibold">Ustawienia</h1>
             <ApiKeySection />
+            <NotificationToggle />
             <InstallPwaButton />
         </div>
     );
