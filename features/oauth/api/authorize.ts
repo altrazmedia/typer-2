@@ -59,10 +59,7 @@ export async function handleAuthorizeSubmit(request: Request) {
         if (typeof state === "string") {
             redirectUrl.searchParams.set("state", state);
         }
-        return NextResponse.json(
-            { redirectUrl: redirectUrl.toString() },
-            { status: 200 },
-        );
+        return NextResponse.redirect(redirectUrl.toString(), 302);
     }
 
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
@@ -82,8 +79,5 @@ export async function handleAuthorizeSubmit(request: Request) {
         redirectUrl.searchParams.set("state", state);
     }
 
-    return NextResponse.json(
-        { redirectUrl: redirectUrl.toString() },
-        { status: 200 },
-    );
+    return NextResponse.redirect(redirectUrl.toString(), 302);
 }

@@ -1,5 +1,3 @@
-"use client";
-
 interface Props {
     clientName: string;
     clientId: string;
@@ -17,27 +15,6 @@ export const AuthorizePage: React.FC<Props> = ({
     codeChallenge,
     codeChallengeMethod,
 }) => {
-    const handleSubmit = async (action: "approve" | "deny") => {
-        const form = new FormData();
-        form.append("action", action);
-        form.append("client_id", clientId);
-        form.append("redirect_uri", redirectUri);
-        form.append("code_challenge", codeChallenge);
-        form.append("code_challenge_method", codeChallengeMethod);
-        if (state) form.append("state", state);
-
-        const res = await fetch("/api/oauth/authorize", {
-            method: "POST",
-            body: form,
-        });
-
-        if (!res.ok) return;
-
-        const data = (await res.json()) as { redirectUrl: string };
-
-        window.location.href = data.redirectUrl;
-    };
-
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
             <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
@@ -68,22 +45,47 @@ export const AuthorizePage: React.FC<Props> = ({
                     </ul>
                 </div>
 
-                <div className="flex flex-col gap-3">
+                <form
+                    method="POST"
+                    action="/api/oauth/authorize"
+                    className="flex flex-col gap-3"
+                >
+                    <input type="hidden" name="client_id" value={clientId} />
+                    <input
+                        type="hidden"
+                        name="redirect_uri"
+                        value={redirectUri}
+                    />
+                    <input
+                        type="hidden"
+                        name="code_challenge"
+                        value={codeChallenge}
+                    />
+                    <input
+                        type="hidden"
+                        name="code_challenge_method"
+                        value={codeChallengeMethod}
+                    />
+                    {state && (
+                        <input type="hidden" name="state" value={state} />
+                    )}
                     <button
-                        type="button"
-                        onClick={() => handleSubmit("approve")}
+                        type="submit"
+                        name="action"
+                        value="approve"
                         className="w-full rounded-lg bg-primary px-4 py-2.5 font-semibold text-primary-foreground transition-colors hover:bg-blue-700"
                     >
                         Zezwól
                     </button>
                     <button
-                        type="button"
-                        onClick={() => handleSubmit("deny")}
+                        type="submit"
+                        name="action"
+                        value="deny"
                         className="w-full rounded-lg border border-gray-300 px-4 py-2.5 font-semibold text-gray-700 transition-colors hover:bg-gray-50"
                     >
                         Odmów
                     </button>
-                </div>
+                </form>
             </div>
         </div>
     );
