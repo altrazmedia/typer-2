@@ -1,66 +1,16 @@
-# Rules
+# Next.js 16
 
-**Language**
+This is NOT the Next.js you know
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in node_modules/next/dist/docs/ before writing any code. Heed deprecation notices.
 
-All user-facing UI text (labels, buttons, titles, descriptions, error messages, placeholders) must be written in Polish.
+# Before each session
 
-**Creating components**
+Read those files before any session:
 
-Use following template when creating new React components:
+- `context/project-overview.md` - what we're building, features description
+- `context/architecture.md` - app architecture, files structure
+- `context/ui-rules.md` - read before implementing or updating any UI pieces
+- `context/code-standards.md` - global rules and conventions
 
-```
-interface Props {}
-
-export const NewComponent: React.FC = ({}) => {
-
-}
-```
-
-**Database changes**
-
-Any database schema changes should be added to /docs/database-schema.md file.
-
-**Code quality**
-
-Before commiting any code:
-
-- check and fix any potential issues with `npm run check`
-- make sure all logic changes are covered with tests
-- make sure all tests are passing
-
-# Project structure
-
-All feature-specific code lives under `features/<feature>/` — never inside `app/api/*`, never inside `components/*` (except `components/ui/` which is shadcn primitives), never inline in `app/(app)/*/page.tsx`.
-
-**Feature folder shape** (`features/<feature>/`):
-
-- `components/` — React components (server and client; the `"use client"` directive is the boundary, no subfolder split)
-- `server/` — server-only data access for server components; every file starts with `import "server-only"`
-- `api/` — API route handlers extracted from `app/api/*/route.ts`; every file starts with `import "server-only"`
-- `schema.ts` — request-body validators (the `parseCreateBody`-style functions)
-- `types.ts` — feature-local TypeScript types
-
-**Routing glue in `app/`**:
-
-- `app/**/page.tsx` is a thin shim: check auth, call `features/<feature>/server/*`, render `features/<feature>/components/*`.
-- `app/api/**/route.ts` is a wrapper only:
-
-    ```ts
-    import { createTournament } from "@/features/tournament/api/create-tournament";
-
-    export async function POST(req: Request) {
-        return createTournament(req);
-    }
-    ```
-
-**Import rules**:
-
-- No barrel `index.ts` files — import the specific file: `import { GameCard } from "@/features/game/components/game-card"`.
-- Cross-feature imports are allowed via `features/X/components/*` and `features/X/server/*`.
-- Shared authz helpers (`requireAuth`, `requireGroupAdmin`, `requireTournamentAdmin`) stay in `lib/api-utils.ts` — infra, not a feature.
-- `components/ui/` (shadcn) and `lib/` (`db.ts`, `auth.ts`, `utils.ts`, `datetime-local.ts`, `api-utils.ts`) are shared infra and never hold feature logic.
-
-# Commands
-
-- run tests: `npm run test`
-- check for issues in code: `npm run check`
+Check if planned changes are compatible with what's listed in those files. If not, continue implementation only if user has accepted changes.
+Treat those files as a living documentation. Make sure to update if necessary.
