@@ -55,11 +55,3 @@ Add or update tests for every changed behaviour:
 - Refactor → keep existing tests green; add tests for any newly exposed logic
 
 Run tests to verify: `npm run test:run`
-
-### 7. Lint
-
-```bash
-npx eslint .
-```
-
-Fix any errors before finishing.
