@@ -2,17 +2,15 @@
 
 ## Tech Stack
 
-| Layer      | Technology                              | Purpose                                                                         |
-| ---------- | --------------------------------------- | ------------------------------------------------------------------------------- |
-| Framework  | Next.js 16 (App Router)                 | Full-stack monorepo — React UI + API routes in one project                      |
-| Language   | TypeScript                              | End-to-end type safety                                                          |
-| Data       | Prisma + Postgres                       | Type-safe queries, schema-first migrations                                      |
-| Auth       | Auth.js v5 (NextAuth) / API Key         | Credentials provider (email + bcrypt password), session cookies; some API endpoints also accept an API Key |
-| Styling    | Tailwind CSS + shadcn/ui                | Fast, accessible, consistent UI components                                      |
-| PWA        | Service Worker + Web Push API           | Installable app with browser push notifications                                 |
-| Unit tests | Vitest                                  | Unit tests for all business logic                                               |
-
-
+| Layer      | Technology                      | Purpose                                                                                                    |
+| ---------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Framework  | Next.js 16 (App Router)         | Full-stack monorepo — React UI + API routes in one project                                                 |
+| Language   | TypeScript                      | End-to-end type safety                                                                                     |
+| Data       | Prisma + Postgres               | Type-safe queries, schema-first migrations                                                                 |
+| Auth       | Auth.js v5 (NextAuth) / API Key | Credentials provider (email + bcrypt password), session cookies; some API endpoints also accept an API Key |
+| Styling    | Tailwind CSS + shadcn/ui        | Fast, accessible, consistent UI components                                                                 |
+| PWA        | Service Worker + Web Push API   | Installable app with browser push notifications                                                            |
+| Unit tests | Vitest                          | Unit tests for all business logic                                                                          |
 
 ## Auth
 
@@ -32,16 +30,16 @@ An additional auth flow created solely for MCP integration. Contains several API
 
 ## Features
 
-| Feature      | Description                                                                                   |
-| ------------ | --------------------------------------------------------------------------------------------- |
-| `auth`       | Registration, login, settings (profile, API key, push notifications)                         |
-| `group`      | User groups — create, join, manage members and admins                                         |
-| `tournament` | Tournaments belonging to a group; manages scoring rules                                       |
-| `game`       | Football matches within a tournament; stores kickoff time, teams, and final scores            |
-| `bet`        | User predictions for game scores; evaluated and scored once a result is entered               |
-| `pwa`        | PWA support — manages browser push subscriptions (`PushSubscription` model)                   |
-| `mcp`        | MCP server integration — exposes app data via MCP-compatible API endpoints                    |
-| `oauth`      | OAuth 2.0 authorization flow used exclusively by the MCP integration                          |
+| Feature      | Description                                                                        |
+| ------------ | ---------------------------------------------------------------------------------- |
+| `auth`       | Registration, login, settings (profile, API key, push notifications)               |
+| `group`      | User groups — create, join, manage members and admins                              |
+| `tournament` | Tournaments belonging to a group; manages scoring rules                            |
+| `game`       | Football matches within a tournament; stores kickoff time, teams, and final scores |
+| `bet`        | User predictions for game scores; evaluated and scored once a result is entered    |
+| `pwa`        | PWA support — manages browser push subscriptions (`PushSubscription` model)        |
+| `mcp`        | MCP server integration — exposes app data via MCP-compatible API endpoints         |
+| `oauth`      | OAuth 2.0 authorization flow used exclusively by the MCP integration               |
 
 ## Files Structure
 
@@ -99,6 +97,7 @@ typer-2/
 ├── tailwind.config.ts
 └── package.json
 ```
+
 ### Routing glue in `app/`
 
 - `app/**/page.tsx` is a thin shim: check auth, call `features/<feature>/server/*`, render `features/<feature>/components/*`.
@@ -112,14 +111,12 @@ typer-2/
     }
     ```
 
-
 ### Import rules
 
 - No barrel `index.ts` files — import the specific file: `import { GameCard } from "@/features/game/components/game-card"`.
 - Cross-feature imports are allowed via `features/X/components/*` and `features/X/server/*`.
 - Shared authz helpers (`requireAuth`, `requireGroupAdmin`, `requireTournamentAdmin`) stay in `lib/api-utils.ts` — infra, not a feature.
 - `components/ui/` (shadcn) and `lib/` (`db.ts`, `auth.ts`, `utils.ts`, `datetime-local.ts`, `api-utils.ts`) are shared infra and never hold feature logic.
-
 
 ## Database Schema (Prisma)
 

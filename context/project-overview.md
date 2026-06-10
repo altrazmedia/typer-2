@@ -10,7 +10,6 @@ A user must belong to a group that has tournaments assigned to it. Each tourname
 
 Built for a small, private group of friends. It was never intended for a broader audience.
 
-
 ## Core Features
 
 ### Groups
@@ -37,11 +36,11 @@ Built for a small, private group of friends. It was never intended for a broader
 - After kickoff, the group admin can enter or edit the final scoreline
 - Entering or editing a scoreline triggers automatic bet evaluation — each bet is marked as one of:
 
-  `EXACT_SCORE` — user predicted the exact final score
+    `EXACT_SCORE` — user predicted the exact final score
 
-  `CORRECT_OUTCOME` — user predicted the correct outcome (win/draw) but not the exact score
+    `CORRECT_OUTCOME` — user predicted the correct outcome (win/draw) but not the exact score
 
-  `INCORRECT` — all other cases, including when the user did not place a bet at all
+    `INCORRECT` — all other cases, including when the user did not place a bet at all
 
 - The leaderboard awards points for `EXACT_SCORE` and `CORRECT_OUTCOME` based on values configured per tournament; `INCORRECT` bets earn no points
 
@@ -50,7 +49,6 @@ Built for a small, private group of friends. It was never intended for a broader
 - A user can submit one bet per game
 - Bets can be edited up until the game's kickoff time
 - Once an admin enters a scoreline, all bets for that game are automatically evaluated and points are awarded
-
 
 ## Additional Features
 
@@ -71,7 +69,6 @@ An MCP server allows users to interact with the app's API through their AI assis
 - Checking the tournament leaderboard
 
 Access to the MCP server is authenticated via an OAuth 2.0 flow built specifically for this integration.
-
 
 ## Language
 

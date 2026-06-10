@@ -23,17 +23,19 @@ import { useState } from "react";
 
 // type definitions; always a named interface
 interface Props {
-  tournamentId: string;
-  onSubmit(): void;
+    tournamentId: string;
+    onSubmit(): void;
 }
 
 // component definition; use React.FC<Props> typing
-export const ComponentName: React.FC<Props> = ({ tournamentId, onSubmit }) => {
-
-}
+export const ComponentName: React.FC<Props> = ({
+    tournamentId,
+    onSubmit,
+}) => {};
 ```
 
 Keep only one component per file. Exceptions:
+
 - loading components (skeletons)
 - UI components consisting of multiple tightly coupled pieces, such as `Card`, `CardTitle`, `CardBody`, etc.
 
@@ -47,14 +49,14 @@ Request body validation lives in `features/<feature>/schema.ts`. Write manual pa
 
 ```ts
 type CreateFooInput = {
-  name: string;
+    name: string;
 };
 
 export function parseCreateFooBody(body: unknown): CreateFooInput | null {
-  if (!body || typeof body !== "object") return null;
-  const o = body as Record<string, unknown>;
-  if (typeof o.name !== "string" || !o.name.trim()) return null;
-  return { name: o.name.trim() };
+    if (!body || typeof body !== "object") return null;
+    const o = body as Record<string, unknown>;
+    if (typeof o.name !== "string" || !o.name.trim()) return null;
+    return { name: o.name.trim() };
 }
 ```
 
@@ -81,7 +83,7 @@ All user-facing text in the web app and API responses (labels, buttons, titles, 
 
 ## General code rules
 
-- comments — never explain what the code does; explain *why* only when the reason is non-obvious
+- comments — never explain what the code does; explain _why_ only when the reason is non-obvious
 - start function names with a verb (e.g. `getUser()`, `handleButtonClick()`)
 - start boolean names with `is`, `should`, `has`, `can`, etc. (e.g. `isThemeApplied`, `shouldDisplayError`)
 - avoid abbreviations in function and variable names
