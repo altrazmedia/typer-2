@@ -49,12 +49,21 @@ export async function createGame(request: Request) {
         );
     }
 
-    const game = await createGameInDb({
-        tournamentId: parsed.tournamentId,
-        homeTeam: parsed.homeTeam,
-        awayTeam: parsed.awayTeam,
-        kickoffAt: parsed.kickoffAt,
-    });
-
-    return NextResponse.json({ game }, { status: 201 });
+    try {
+        const game = await createGameInDb({
+            tournamentId: parsed.tournamentId,
+            homeTeam: parsed.homeTeam,
+            awayTeam: parsed.awayTeam,
+            kickoffAt: parsed.kickoffAt,
+        });
+        return NextResponse.json({ game }, { status: 201 });
+    } catch (error) {
+        if (error instanceof Error) {
+            return NextResponse.json({ error: error.message }, { status: 400 });
+        }
+        return NextResponse.json(
+            { error: "Nie udało się utworzyć meczu." },
+            { status: 500 },
+        );
+    }
 }

@@ -60,12 +60,21 @@ export async function updateGame(request: Request, context: RouteContext) {
         );
     }
 
-    const updated = await updateGameInDb({
-        gameId,
-        homeTeam: parsed.homeTeam,
-        awayTeam: parsed.awayTeam,
-        kickoffAt: parsed.kickoffAt,
-    });
-
-    return NextResponse.json({ game: updated });
+    try {
+        const updated = await updateGameInDb({
+            gameId,
+            homeTeam: parsed.homeTeam,
+            awayTeam: parsed.awayTeam,
+            kickoffAt: parsed.kickoffAt,
+        });
+        return NextResponse.json({ game: updated });
+    } catch (error) {
+        if (error instanceof Error) {
+            return NextResponse.json({ error: error.message }, { status: 400 });
+        }
+        return NextResponse.json(
+            { error: "Nie udało się zaktualizować meczu." },
+            { status: 500 },
+        );
+    }
 }
