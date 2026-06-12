@@ -3,9 +3,9 @@ import "server-only";
 import { NextResponse } from "next/server";
 
 import { requireAuth, requireTournamentAdmin } from "@/lib/api-utils";
-import { prisma } from "@/lib/db";
 
 import { parseCreateGameBody } from "@/features/game/schema";
+import { createGame as createGameInDb } from "@/features/game/server/create-game";
 
 export async function createGame(request: Request) {
     const authResult = await requireAuth(request);
@@ -49,13 +49,11 @@ export async function createGame(request: Request) {
         );
     }
 
-    const game = await prisma.game.create({
-        data: {
-            tournamentId: parsed.tournamentId,
-            homeTeam: parsed.homeTeam,
-            awayTeam: parsed.awayTeam,
-            kickoffAt: parsed.kickoffAt,
-        },
+    const game = await createGameInDb({
+        tournamentId: parsed.tournamentId,
+        homeTeam: parsed.homeTeam,
+        awayTeam: parsed.awayTeam,
+        kickoffAt: parsed.kickoffAt,
     });
 
     return NextResponse.json({ game }, { status: 201 });

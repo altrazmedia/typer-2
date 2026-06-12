@@ -8,18 +8,18 @@ import {
 
 describe("parseCreateGameBody", () => {
     it("parses valid body", () => {
-        const kickoff = new Date("2026-06-01T18:00:00.000Z");
+        const kickoffAt = "2026-06-01T18:00:00.000Z";
         const out = parseCreateGameBody({
             tournamentId: "t1",
             homeTeam: "  Home  ",
             awayTeam: "Away",
-            kickoffAt: kickoff.toISOString(),
+            kickoffAt,
         });
         expect(out).toEqual({
             tournamentId: "t1",
             homeTeam: "Home",
             awayTeam: "Away",
-            kickoffAt: kickoff,
+            kickoffAt,
         });
     });
 
@@ -33,13 +33,13 @@ describe("parseCreateGameBody", () => {
         ).toBeNull();
     });
 
-    it("returns null when kickoffAt is invalid date string", () => {
+    it("returns null when kickoffAt is empty", () => {
         expect(
             parseCreateGameBody({
                 tournamentId: "t1",
                 homeTeam: "A",
                 awayTeam: "B",
-                kickoffAt: "not-a-date",
+                kickoffAt: "  ",
             }),
         ).toBeNull();
     });
@@ -55,8 +55,10 @@ describe("parseUpdateGameBody", () => {
         expect(parseUpdateGameBody({})).toBeNull();
     });
 
-    it("returns null when kickoffAt invalid", () => {
-        expect(parseUpdateGameBody({ kickoffAt: "bad" })).toBeNull();
+    it("parses kickoffAt as trimmed string", () => {
+        expect(
+            parseUpdateGameBody({ kickoffAt: " 2026-06-01T18:00:00.000Z " }),
+        ).toEqual({ kickoffAt: "2026-06-01T18:00:00.000Z" });
     });
 });
 

@@ -1,5 +1,11 @@
 import type { BetResult } from "@prisma/client";
 
+export interface GameParams {
+    homeTeam: string;
+    awayTeam: string;
+    kickoffAt: string;
+}
+
 export interface GameRow {
     id: string;
     homeTeam: string;

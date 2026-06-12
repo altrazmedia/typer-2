@@ -2,13 +2,13 @@ export type CreateGameInput = {
     tournamentId: string;
     homeTeam: string;
     awayTeam: string;
-    kickoffAt: Date;
+    kickoffAt: string;
 };
 
 export type UpdateGameInput = {
     homeTeam?: string;
     awayTeam?: string;
-    kickoffAt?: Date;
+    kickoffAt?: string;
 };
 
 export type SubmitResultInput = {
@@ -29,14 +29,11 @@ export function parseCreateGameBody(body: unknown): CreateGameInput | null {
     if (typeof awayTeam !== "string" || !awayTeam.trim()) return null;
     if (typeof kickoffAtRaw !== "string" || !kickoffAtRaw.trim()) return null;
 
-    const kickoffAt = new Date(kickoffAtRaw);
-    if (Number.isNaN(kickoffAt.getTime())) return null;
-
     return {
         tournamentId: tournamentId.trim(),
         homeTeam: homeTeam.trim(),
         awayTeam: awayTeam.trim(),
-        kickoffAt,
+        kickoffAt: kickoffAtRaw.trim(),
     };
 }
 
@@ -59,9 +56,9 @@ export function parseUpdateGameBody(body: unknown): UpdateGameInput | null {
     }
     if (o.kickoffAt !== undefined) {
         if (typeof o.kickoffAt !== "string") return null;
-        const d = new Date(o.kickoffAt);
-        if (Number.isNaN(d.getTime())) return null;
-        out.kickoffAt = d;
+        const kickoffAt = o.kickoffAt.trim();
+        if (!kickoffAt) return null;
+        out.kickoffAt = kickoffAt;
     }
 
     if (

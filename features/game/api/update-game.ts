@@ -6,6 +6,7 @@ import { requireAuth, requireTournamentAdmin } from "@/lib/api-utils";
 import { prisma } from "@/lib/db";
 
 import { parseUpdateGameBody } from "@/features/game/schema";
+import { updateGame as updateGameInDb } from "@/features/game/server/update-game";
 
 interface RouteContext {
     params: Promise<{ id: string }>;
@@ -59,19 +60,11 @@ export async function updateGame(request: Request, context: RouteContext) {
         );
     }
 
-    const updated = await prisma.game.update({
-        where: { id: gameId },
-        data: {
-            ...(parsed.homeTeam !== undefined
-                ? { homeTeam: parsed.homeTeam }
-                : {}),
-            ...(parsed.awayTeam !== undefined
-                ? { awayTeam: parsed.awayTeam }
-                : {}),
-            ...(parsed.kickoffAt !== undefined
-                ? { kickoffAt: parsed.kickoffAt }
-                : {}),
-        },
+    const updated = await updateGameInDb({
+        gameId,
+        homeTeam: parsed.homeTeam,
+        awayTeam: parsed.awayTeam,
+        kickoffAt: parsed.kickoffAt,
     });
 
     return NextResponse.json({ game: updated });

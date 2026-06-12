@@ -67,6 +67,7 @@ typer-2/
 │   └── providers.tsx                   # Global React context providers
 ├── features/
 │   ├── <feature-name>/
+│   │   ├── actions/                    # Next.js Server Actions; every file starts with `"use server"` and `import "server-only"`
 │   │   ├── api/                        # API route handlers (imported by app/api/**/route.ts)
 │   │   ├── components/                 # Feature-related React components (server and client)
 │   │   ├── helpers/                    # Pure utility functions; one function per file
