@@ -60,6 +60,46 @@ export function parseCreateFooBody(body: unknown): CreateFooInput | null {
 }
 ```
 
+## Server Actions
+
+All server actions live in `features/<feature>/actions/` and must start with:
+
+```ts
+"use server";
+
+import "server-only";
+```
+
+Every server action must return `Promise<ServerActionResponse<T>>` from `@/lib/types`. Use the `getSuccessActionResponse()` and `getErrorActionResponse()` helpers from `@/lib/server-action-response` to construct responses — never throw from a server action.
+
+```ts
+import type { ServerActionResponse } from "@/lib/types";
+import {
+    getSuccessActionResponse,
+    getErrorActionResponse,
+} from "@/lib/server-action-response";
+
+export async function doSomethingAction(
+    args: DoSomethingActionArgs,
+): Promise<ServerActionResponse> {
+    // ...
+    return getSuccessActionResponse();
+    // or
+    return getErrorActionResponse("Coś poszło nie tak.");
+}
+```
+
+When the action needs to return data on success, use the generic parameter:
+
+```ts
+export async function createFooAction(
+    args: CreateFooActionArgs,
+): Promise<ServerActionResponse<{ id: string }>> {
+    // ...
+    return getSuccessActionResponse({ id: newFoo.id });
+}
+```
+
 ## Server-only modules
 
 All files under `features/<feature>/server/` and `features/<feature>/api/` must start with:
