@@ -1,6 +1,5 @@
+import dayjs from "dayjs";
+
 export function formatKickoff(d: Date): string {
-    return new Date(d).toLocaleString("pl-PL", {
-        dateStyle: "medium",
-        timeStyle: "short",
-    });
+    return dayjs(d).format("DD.MM.YYYY - HH:mm");
 }
