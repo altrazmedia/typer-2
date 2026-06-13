@@ -6,9 +6,13 @@ until pg_isready -h db -p 5432 -U postgres -d typer_dev >/dev/null 2>&1; do
     sleep 2
 done
 
-if [ ! -f node_modules/.bin/next ]; then
-    echo "Installing dependencies..."
+LOCKFILE_HASH=$(md5sum package-lock.json | awk '{print $1}')
+INSTALLED_HASH=$(cat node_modules/.package-lock-hash 2>/dev/null || echo "")
+
+if [ "$LOCKFILE_HASH" != "$INSTALLED_HASH" ]; then
+    echo "Dependencies changed, installing..."
     npm ci
+    echo "$LOCKFILE_HASH" > node_modules/.package-lock-hash
 fi
 
 npx prisma generate
