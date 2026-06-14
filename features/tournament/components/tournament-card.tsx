@@ -24,3 +24,7 @@ export const TournamentCard: FC<Props> = ({ tournamentId, name }) => {
         </Link>
     );
 };
+
+export const TournamentCardLoading: FC = () => (
+    <div className="h-[92px] animate-pulse flex-col rounded-xl bg-primary/90"></div>
+);

@@ -5,27 +5,36 @@ import { Separator } from "@/components/ui/separator";
 import { getAuthInApp } from "@/lib/auth/get-auth-in-app";
 
 import { CreateTournamentDialog } from "@/features/tournament/components/create-tournament-dialog";
-import { TournamentCard } from "@/features/tournament/components/tournament-card";
+import {
+    TournamentCard,
+    TournamentCardLoading,
+} from "@/features/tournament/components/tournament-card";
 import { listTournamentsForUser } from "@/features/tournament/server/list-tournaments-for-user";
 
-export const TournamentsOverviewLoading: FC = () => {
-    return (
-        <div className="flex flex-col gap-4">
-            <div className="h-6 w-40 animate-pulse rounded bg-muted" />
-            <div className="h-px w-full bg-border" />
-            <div className="flex flex-col gap-3">
-                <div className="h-16 animate-pulse rounded-lg bg-muted" />
-                <div className="h-16 animate-pulse rounded-lg bg-muted" />
-            </div>
-            <p className="text-sm text-muted-foreground">Ładowanie…</p>
-        </div>
-    );
-};
+export const TournamentsOverviewLoading: FC = () => (
+    <div className="flex flex-col gap-10">
+        <section className="flex flex-col gap-4">
+            <div className="h-7 w-48 animate-pulse rounded bg-muted" />
+            <Separator />
+            <ul className="flex flex-col gap-3">
+                <li className="min-w-0">
+                    <TournamentCardLoading />
+                </li>
+                <li className="min-w-0">
+                    <TournamentCardLoading />
+                </li>
+                <li className="min-w-0">
+                    <TournamentCardLoading />
+                </li>
+            </ul>
+        </section>
+    </div>
+);
 
 export const TournamentsOverview: FC = async () => {
     const session = await getAuthInApp();
-
     const sections = await listTournamentsForUser(session.user.id);
+
     if (sections.length === 0) {
         return (
             <p className="text-sm text-muted-foreground">
