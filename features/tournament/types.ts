@@ -2,7 +2,6 @@ export interface TournamentListItem {
     id: string;
     name: string;
     season: string | null;
-    gameCount: number;
 }
 
 export interface TournamentGroupSection {

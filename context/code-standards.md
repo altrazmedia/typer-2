@@ -136,6 +136,22 @@ All user-facing text in the web app and API responses (labels, buttons, titles, 
 - every function containing business logic must be covered by unit tests
 - test files live in `features/<feature>/__tests__/` and are named `*.test.ts` or `*.test.tsx`
 
+## Caching
+
+All Next.js cache tag strings must be produced by `getCacheTag()` from [`lib/cache-tags.ts`](../lib/cache-tags.ts). Never construct tag strings by hand in `cacheTag` or `revalidateTag` calls.
+
+Tag definitions live in the `CacheTags` interface in that file. Each entry maps a tag id to either a params object type or `never` (no params). To add a new tag, add one entry to `CacheTags` — the overloads are derived automatically.
+
+String format: single param → `id:value`; multiple params → param keys sorted alphabetically, values joined with `:`.
+
+```ts
+import { cacheTag, revalidateTag } from "next/cache";
+import { getCacheTag } from "@/lib/cache-tags";
+
+cacheTag(getCacheTag("leaderboard", { tournamentId }));
+revalidateTag(getCacheTag("tournaments-for-group", { groupId }), "max");
+```
+
 ## Before committing
 
 Run the following command and fix any ESLint, Prettier, or TypeScript issues before committing:

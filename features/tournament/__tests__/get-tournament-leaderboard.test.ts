@@ -2,11 +2,6 @@ import type { GroupMember, User } from "@prisma/client";
 import { BetResult } from "@prisma/client";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("next/cache", () => ({
-    cacheTag: vi.fn(),
-    cacheLife: vi.fn(),
-}));
-
 import {
     aggregateLeaderboardEntries,
     assignStandardRanks,

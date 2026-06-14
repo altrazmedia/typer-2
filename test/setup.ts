@@ -27,6 +27,12 @@ vi.mock("next-auth/react", () => ({
     signIn: vi.fn(),
 }));
 
+vi.mock("next/cache", () => ({
+    cacheTag: vi.fn(),
+    cacheLife: vi.fn(),
+    revalidateTag: vi.fn(),
+}));
+
 if (typeof window !== "undefined") {
     Object.defineProperty(window, "matchMedia", {
         writable: true,

@@ -4,6 +4,7 @@ import { BetResult } from "@prisma/client";
 import { cacheLife, cacheTag } from "next/cache";
 
 import type { LeaderboardEntry } from "@/features/tournament/types";
+import { getCacheTag } from "@/lib/cache-tags";
 import { prisma } from "@/lib/db";
 
 interface MemberWithUser {
@@ -113,7 +114,7 @@ export async function getTournamentLeaderboard(
     tournamentId: string,
 ): Promise<LeaderboardEntry[] | null> {
     "use cache";
-    cacheTag(`leaderboard:${tournamentId}`);
+    cacheTag(getCacheTag("leaderboard", { tournamentId }));
     cacheLife("days");
 
     const tournament = await prisma.tournament.findUnique({
