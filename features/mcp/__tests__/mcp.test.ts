@@ -192,7 +192,6 @@ describe("handleMcpRequest — list_my_tournaments tool", () => {
                     tournaments: [
                         {
                             ...makeTournament(),
-                            _count: { games: 5 },
                         },
                     ],
                 },
@@ -213,7 +212,6 @@ describe("handleMcpRequest — list_my_tournaments tool", () => {
             id: "tournament_test_1",
             name: "Test Tournament",
             season: null,
-            gameCount: 5,
         });
     });
 });

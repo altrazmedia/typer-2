@@ -14,10 +14,7 @@ import { prisma } from "@/test/prisma";
 import { makeInvalidJsonRequest, makeJsonRequest } from "@/test/request";
 import { readJson } from "@/test/response";
 
-vi.mock("next/cache", () => ({
-    revalidateTag: vi.fn(),
-}));
-
+import { getCacheTag } from "@/lib/cache-tags";
 import { revalidateTag } from "next/cache";
 
 const gameId = "game_test_1";
@@ -156,8 +153,8 @@ describe("submitGameResult", () => {
             data: { betResult: BetResult.INCORRECT },
         });
         expect(revalidateTag).toHaveBeenCalledWith(
-            "leaderboard:tournament_test_1",
-            "days",
+            getCacheTag("leaderboard", { tournamentId: "tournament_test_1" }),
+            "max",
         );
     });
 

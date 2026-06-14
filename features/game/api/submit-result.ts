@@ -4,6 +4,7 @@ import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 import { requireAuth, requireTournamentAdmin } from "@/lib/api-utils";
+import { getCacheTag } from "@/lib/cache-tags";
 import { prisma } from "@/lib/db";
 
 import { awardGamePoints } from "@/features/game/api/award-game-points";
@@ -76,7 +77,10 @@ export async function submitGameResult(
         return game;
     });
 
-    revalidateTag(`leaderboard:${game.tournamentId}`, "days");
+    revalidateTag(
+        getCacheTag("leaderboard", { tournamentId: game.tournamentId }),
+        "max",
+    );
 
     return NextResponse.json({ game: updated });
 }

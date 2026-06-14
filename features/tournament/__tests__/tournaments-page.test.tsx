@@ -38,7 +38,6 @@ describe("TournamentsOverview", () => {
                         id: "t1",
                         name: "Liga 2026",
                         season: "2025/26",
-                        gameCount: 3,
                     },
                 ],
             },

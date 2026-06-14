@@ -1,8 +1,10 @@
 import "server-only";
 
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 import { requireAuth, requireGroupAdmin } from "@/lib/api-utils";
+import { getCacheTag } from "@/lib/cache-tags";
 import { prisma } from "@/lib/db";
 
 import { parseGroupNameBody } from "@/features/group/schema";
@@ -60,6 +62,8 @@ export async function updateGroup(request: Request, context: RouteContext) {
         where: { id: groupId },
         data: { name: parsed.name },
     });
+
+    revalidateTag(getCacheTag("tournaments-for-group", { groupId }), "max");
 
     return NextResponse.json({ group: updated });
 }

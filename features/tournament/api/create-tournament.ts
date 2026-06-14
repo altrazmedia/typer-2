@@ -1,8 +1,10 @@
 import "server-only";
 
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 import { requireAuth, requireGroupAdmin } from "@/lib/api-utils";
+import { getCacheTag } from "@/lib/cache-tags";
 import { prisma } from "@/lib/db";
 
 import { parseCreateTournamentBody } from "@/features/tournament/schema";
@@ -62,6 +64,11 @@ export async function createTournament(request: Request) {
             correctOutcomePoints: parsed.correctOutcomePoints,
         },
     });
+
+    revalidateTag(
+        getCacheTag("tournaments-for-group", { groupId: parsed.groupId }),
+        "max",
+    );
 
     return NextResponse.json({ tournament }, { status: 201 });
 }
