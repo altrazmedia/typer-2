@@ -1,27 +1,22 @@
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
-import { auth } from "@/lib/auth";
+import { PageHeader } from "@/components/ui/page-header";
 
-import { TournamentsOverview } from "@/features/tournament/components/tournaments-overview";
-import { TournamentsOverviewFallback } from "@/features/tournament/components/tournaments-overview-fallback";
-import { listTournamentsForUser } from "@/features/tournament/server/list-tournaments-for-user";
+import {
+    TournamentsOverview,
+    TournamentsOverviewLoading,
+} from "@/features/tournament/components/tournaments-overview";
 
 export function TournamentsPage() {
     return (
-        <Suspense fallback={<TournamentsOverviewFallback />}>
-            <TournamentsPageContent />
-        </Suspense>
+        <div className="flex flex-col gap-8">
+            <PageHeader
+                header="Turnieje"
+                subHeader="Przeglądaj turnieje w grupach, do których należysz"
+            />
+            <Suspense fallback={<TournamentsOverviewLoading />}>
+                <TournamentsOverview />
+            </Suspense>
+        </div>
     );
-}
-
-export async function TournamentsPageContent() {
-    const session = await auth();
-    if (!session?.user?.id) {
-        redirect("/login");
-    }
-
-    const sections = await listTournamentsForUser(session.user.id);
-
-    return <TournamentsOverview sections={sections} />;
 }

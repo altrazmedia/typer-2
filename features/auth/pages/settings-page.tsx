@@ -1,7 +1,6 @@
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
-import { auth } from "@/lib/auth";
+import { getAuthInApp } from "@/lib/auth/get-auth-in-app";
 
 import { ApiKeySection } from "@/features/auth/components/api-key-section";
 import { McpSection } from "@/features/auth/components/mcp-section";
@@ -17,10 +16,7 @@ export function SettingsPage() {
 }
 
 async function SettingsPageContent() {
-    const session = await auth();
-    if (!session?.user?.id) {
-        redirect("/login");
-    }
+    await getAuthInApp();
 
     return (
         <div className="space-y-8">

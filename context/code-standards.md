@@ -118,6 +118,7 @@ All user-facing text in the web app and API responses (labels, buttons, titles, 
 
 - use kebab-case for file names
 - no barrel exports (`index.ts` files)
+- **Exception:** `lib/auth/index.ts` uses an index file deliberately so that existing `@/lib/auth` imports continue to resolve after the folder restructure. New `lib/auth/*.ts` files should be imported directly by name.
 - if a type needs to be exported outside the component file, move it to `types.ts` in the relevant feature folder
 - pure utility functions belong in `features/<feature>/helpers/` — one function per file
 

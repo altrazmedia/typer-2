@@ -1,7 +1,7 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { auth } from "@/lib/auth";
+import { getAuthInApp } from "@/lib/auth/get-auth-in-app";
 
 import { TournamentDetailView } from "@/features/tournament/components/tournament-detail";
 import { TournamentDetailsFallback } from "@/features/tournament/components/tournament-details-fallback";
@@ -32,10 +32,7 @@ export async function TournamentDetailsContent({
 }: Props) {
     const { id: tournamentId } = await params;
     const { tab: tabParam } = await searchParams;
-    const session = await auth();
-    if (!session?.user?.id) {
-        redirect("/login");
-    }
+    const session = await getAuthInApp();
 
     const detail = await getTournamentDetailForUser(
         tournamentId,
