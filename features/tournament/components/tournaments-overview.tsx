@@ -1,9 +1,8 @@
-import { redirect } from "next/navigation";
 import type { FC } from "react";
 
 import { Separator } from "@/components/ui/separator";
 
-import { auth } from "@/lib/auth";
+import { getAuthInApp } from "@/lib/auth/get-auth-in-app";
 
 import { CreateTournamentDialog } from "@/features/tournament/components/create-tournament-dialog";
 import { TournamentCard } from "@/features/tournament/components/tournament-card";
@@ -24,10 +23,7 @@ export const TournamentsOverviewLoading: FC = () => {
 };
 
 export const TournamentsOverview: FC = async () => {
-    const session = await auth();
-    if (!session?.user?.id) {
-        redirect("/login");
-    }
+    const session = await getAuthInApp();
 
     const sections = await listTournamentsForUser(session.user.id);
     if (sections.length === 0) {

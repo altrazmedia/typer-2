@@ -21,7 +21,7 @@ describe("TournamentsOverview", () => {
             throw new Error("redirect");
         });
 
-        await expect(TournamentsOverview()).rejects.toThrow("redirect");
+        await expect(TournamentsOverview({})).rejects.toThrow("redirect");
 
         expect(redirect).toHaveBeenCalledWith("/login");
     });
@@ -44,7 +44,7 @@ describe("TournamentsOverview", () => {
             },
         ]);
 
-        render(await TournamentsOverview());
+        render(await TournamentsOverview({}));
 
         expect(screen.getByText("Liga 2026")).toBeInTheDocument();
         expect(screen.getByText("Grupa testowa")).toBeInTheDocument();
