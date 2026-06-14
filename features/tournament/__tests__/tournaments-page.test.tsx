@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { TournamentsPageContent } from "@/features/tournament/pages/tournaments-page";
+import { TournamentsOverview } from "@/features/tournament/components/tournaments-overview";
 import { listTournamentsForUser } from "@/features/tournament/server/list-tournaments-for-user";
 import { mockAuthedUser, mockUnauthed } from "@/test/auth";
 
@@ -13,7 +13,7 @@ vi.mock("@/features/tournament/components/create-tournament-dialog", () => ({
     CreateTournamentDialog: () => null,
 }));
 
-describe("TournamentsPage", () => {
+describe("TournamentsOverview", () => {
     it("redirects to login when the user is not authenticated", async () => {
         const { redirect } = await import("next/navigation");
         mockUnauthed();
@@ -21,7 +21,7 @@ describe("TournamentsPage", () => {
             throw new Error("redirect");
         });
 
-        await expect(TournamentsPageContent()).rejects.toThrow("redirect");
+        await expect(TournamentsOverview()).rejects.toThrow("redirect");
 
         expect(redirect).toHaveBeenCalledWith("/login");
     });
@@ -44,9 +44,8 @@ describe("TournamentsPage", () => {
             },
         ]);
 
-        render(await TournamentsPageContent());
+        render(await TournamentsOverview());
 
-        expect(screen.getByText("Turnieje")).toBeInTheDocument();
         expect(screen.getByText("Liga 2026")).toBeInTheDocument();
         expect(screen.getByText("Grupa testowa")).toBeInTheDocument();
     });
