@@ -72,10 +72,16 @@ export const NotificationToggle: React.FC = () => {
                 return;
             }
 
-            const subscription = await getExistingPushSubscription();
-            if (!cancelled) {
-                setEnabled(subscription !== null);
-                setIsLoading(false);
+            try {
+                const subscription = await getExistingPushSubscription();
+                if (!cancelled) {
+                    setEnabled(subscription !== null);
+                    setIsLoading(false);
+                }
+            } catch {
+                if (!cancelled) {
+                    setIsLoading(false);
+                }
             }
         }
 
