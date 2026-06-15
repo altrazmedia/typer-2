@@ -118,7 +118,13 @@ export async function notifyMissingBets(request: Request) {
                 );
                 sent += 1;
             } catch (error) {
+                logMessage(
+                    `error sending push notification: ${error}; ${JSON.stringify(error)}`,
+                );
                 if (isStalePushSubscriptionError(error)) {
+                    logMessage(
+                        `removing stale subscription: ${subscription.id}`,
+                    );
                     await prisma.pushSubscription.delete({
                         where: { id: subscription.id },
                     });
