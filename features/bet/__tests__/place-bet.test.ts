@@ -2,17 +2,19 @@ import { describe, expect, it } from "vitest";
 
 import { placeBet } from "@/features/bet/api/place-bet";
 import { placeBetForUser } from "@/features/bet/server/place-bet";
+import { getCacheTag } from "@/lib/cache-tags";
 import { mockApiKeyAuth, mockAuthedUser, mockUnauthed } from "@/test/auth";
 import { makeBet, makeGame, makeGroupMember } from "@/test/factories";
 import { prisma } from "@/test/prisma";
 import { makeJsonRequest } from "@/test/request";
 import { readJson } from "@/test/response";
+import { revalidateTag } from "next/cache";
 
 function mockUpcomingGame(gameId: string) {
     const futureKickoff = new Date(Date.now() + 3_600_000);
     prisma.game.findUnique.mockResolvedValue({
         ...makeGame({ id: gameId, kickoffAt: futureKickoff }),
-        tournament: { groupId: "group_test_1" },
+        tournament: { groupId: "group_test_1", id: "tournament_test_1" },
     } as never);
     prisma.groupMember.findFirst.mockResolvedValue(makeGroupMember());
 }
@@ -62,7 +64,7 @@ describe("placeBet", () => {
         mockAuthedUser({ id: "u1" });
         prisma.game.findUnique.mockResolvedValue({
             ...makeGame({ id: "g_forbidden" }),
-            tournament: { groupId: "group_test_1" },
+            tournament: { groupId: "group_test_1", id: "tournament_test_1" },
         } as never);
         prisma.groupMember.findFirst.mockResolvedValue(null);
 
@@ -84,7 +86,7 @@ describe("placeBet", () => {
                 id: "g_past",
                 kickoffAt: new Date("2020-01-01T12:00:00.000Z"),
             }),
-            tournament: { groupId: "group_test_1" },
+            tournament: { groupId: "group_test_1", id: "tournament_test_1" },
         } as never);
         prisma.groupMember.findFirst.mockResolvedValue(makeGroupMember());
         const req = makeJsonRequest({
@@ -224,7 +226,7 @@ describe("placeBetForUser", () => {
     it("returns FORBIDDEN when user is not a group member", async () => {
         prisma.game.findUnique.mockResolvedValue({
             ...makeGame({ id: "g1" }),
-            tournament: { groupId: "group_test_1" },
+            tournament: { groupId: "group_test_1", id: "tournament_test_1" },
         } as never);
         prisma.groupMember.findFirst.mockResolvedValue(null);
 
@@ -266,5 +268,16 @@ describe("placeBetForUser", () => {
                 awayScore: 1,
             },
         });
+        expect(revalidateTag).toHaveBeenCalledWith(
+            getCacheTag("tournament-user-games", {
+                tournamentId: "tournament_test_1",
+                userId: "u1",
+            }),
+            "max",
+        );
+        expect(revalidateTag).toHaveBeenCalledWith(
+            getCacheTag("game-bets", { gameId: "g_upcoming" }),
+            "max",
+        );
     });
 });

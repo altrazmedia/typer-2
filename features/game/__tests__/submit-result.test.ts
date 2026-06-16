@@ -1,6 +1,6 @@
 import { BetResult } from "@prisma/client";
 import type { Prisma } from "@prisma/client";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { submitGameResult } from "@/features/game/api/submit-result";
 import { mockAuthedUser, mockUnauthed } from "@/test/auth";
@@ -154,6 +154,12 @@ describe("submitGameResult", () => {
         });
         expect(revalidateTag).toHaveBeenCalledWith(
             getCacheTag("leaderboard", { tournamentId: "tournament_test_1" }),
+            "max",
+        );
+        expect(revalidateTag).toHaveBeenCalledWith(
+            getCacheTag("tournament-games", {
+                tournamentId: "tournament_test_1",
+            }),
             "max",
         );
     });

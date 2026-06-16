@@ -1,5 +1,8 @@
 import "server-only";
 
+import { revalidateTag } from "next/cache";
+
+import { getCacheTag } from "@/lib/cache-tags";
 import { prisma } from "@/lib/db";
 
 export type PlaceBetResult =
@@ -19,7 +22,7 @@ export async function placeBetForUser(
     const game = await prisma.game.findUnique({
         where: { id: gameId },
         include: {
-            tournament: { select: { groupId: true } },
+            tournament: { select: { groupId: true, id: true } },
         },
     });
 
@@ -70,6 +73,15 @@ export async function placeBetForUser(
             awayScore,
         },
     });
+
+    revalidateTag(
+        getCacheTag("tournament-user-games", {
+            tournamentId: game.tournament.id,
+            userId,
+        }),
+        "max",
+    );
+    revalidateTag(getCacheTag("game-bets", { gameId }), "max");
 
     return { ok: true, homeScore, awayScore };
 }

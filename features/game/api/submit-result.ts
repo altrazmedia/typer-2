@@ -81,6 +81,10 @@ export async function submitGameResult(
         getCacheTag("leaderboard", { tournamentId: game.tournamentId }),
         "max",
     );
+    revalidateTag(
+        getCacheTag("tournament-games", { tournamentId: game.tournamentId }),
+        "max",
+    );
 
     return NextResponse.json({ game: updated });
 }
