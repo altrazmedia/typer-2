@@ -73,6 +73,7 @@ describe("getLeaderboard", () => {
                 name: "Alice",
                 exactScoreBets: 2,
                 correctOutcomeBets: 1,
+                additionalBetPoints: 0,
                 totalPoints: 7,
             },
         ];

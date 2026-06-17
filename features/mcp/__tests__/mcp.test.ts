@@ -403,6 +403,7 @@ describe("handleMcpRequest — get_leaderboard tool", () => {
                 name: "Jan Kowalski",
                 exactScoreBets: 1,
                 correctOutcomeBets: 0,
+                additionalBetPoints: 0,
                 totalPoints: 3,
             },
         ]);
@@ -425,6 +426,7 @@ describe("handleMcpRequest — get_leaderboard tool", () => {
                 name: "Jan Kowalski",
                 exactScoreBets: 1,
                 correctOutcomeBets: 0,
+                additionalBetPoints: 0,
                 totalPoints: 3,
             },
         ]);

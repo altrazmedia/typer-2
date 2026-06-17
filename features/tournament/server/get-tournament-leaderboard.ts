@@ -3,6 +3,7 @@ import "server-only";
 import { BetResult } from "@prisma/client";
 import { cacheLife, cacheTag } from "next/cache";
 
+import { computeAdditionalBetPoints } from "@/features/tournament/helpers/compute-additional-bet-points";
 import type { LeaderboardEntry } from "@/features/tournament/types";
 import { getCacheTag } from "@/lib/cache-tags";
 import { prisma } from "@/lib/db";
@@ -28,6 +29,7 @@ export function aggregateLeaderboardEntries(
     members: MemberWithUser[],
     bets: BetWithResult[],
     scoring: ScoringConfig,
+    additionalBetPointsByUser: Map<string, number> = new Map(),
 ): LeaderboardRow[] {
     const countsByUser = new Map<
         string,
@@ -60,15 +62,19 @@ export function aggregateLeaderboardEntries(
 
     const entries = members.map((member) => {
         const counts = countsByUser.get(member.userId)!;
+        const additionalBetPoints =
+            additionalBetPointsByUser.get(member.userId) ?? 0;
         const totalPoints =
             counts.exactScoreBets * scoring.exactScorePoints +
-            counts.correctOutcomeBets * scoring.correctOutcomePoints;
+            counts.correctOutcomeBets * scoring.correctOutcomePoints +
+            additionalBetPoints;
 
         return {
             userId: member.userId,
             name: member.name,
             exactScoreBets: counts.exactScoreBets,
             correctOutcomeBets: counts.correctOutcomeBets,
+            additionalBetPoints,
             totalPoints,
         };
     });
@@ -138,16 +144,53 @@ export async function getTournamentLeaderboard(
         },
     });
 
-    const bets = await prisma.bet.findMany({
-        where: {
-            game: { tournamentId },
-            betResult: { not: null },
-        },
-        select: {
-            userId: true,
-            betResult: true,
-        },
-    });
+    const [bets, additionalBetEvents] = await Promise.all([
+        prisma.bet.findMany({
+            where: {
+                game: { tournamentId },
+                betResult: { not: null },
+            },
+            select: {
+                userId: true,
+                betResult: true,
+            },
+        }),
+        prisma.additionalBetEvent.findMany({
+            where: { tournamentId },
+            select: {
+                id: true,
+                points: true,
+                answer: true,
+                bets: {
+                    select: {
+                        eventId: true,
+                        userId: true,
+                        answer: true,
+                    },
+                },
+            },
+        }),
+    ]);
+
+    const additionalBetPointsByUser = new Map<string, number>();
+
+    for (const member of members) {
+        const userBetsByEventId = new Map<string, string>();
+
+        for (const event of additionalBetEvents) {
+            const userBet = event.bets.find(
+                (bet) => bet.userId === member.userId,
+            );
+            if (userBet) {
+                userBetsByEventId.set(event.id, userBet.answer);
+            }
+        }
+
+        additionalBetPointsByUser.set(
+            member.userId,
+            computeAdditionalBetPoints(additionalBetEvents, userBetsByEventId),
+        );
+    }
 
     const aggregated = aggregateLeaderboardEntries(
         members.map((member) => ({
@@ -159,6 +202,7 @@ export async function getTournamentLeaderboard(
             exactScorePoints: tournament.exactScorePoints,
             correctOutcomePoints: tournament.correctOutcomePoints,
         },
+        additionalBetPointsByUser,
     );
 
     return assignStandardRanks(aggregated);

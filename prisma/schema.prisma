@@ -16,6 +16,7 @@ model User {
 
   groupMembers      GroupMember[]
   bets              Bet[]
+  additionalBets    AdditionalBet[]
   createdGroups     Group[]            @relation("GroupCreator")
   apiKey            ApiKey?
   oauthCodes        OAuthCode[]
@@ -90,8 +91,36 @@ model Tournament {
   exactScorePoints     Int      @default(3)
   correctOutcomePoints Int      @default(1)
 
-  group Group  @relation(fields: [groupId], references: [id])
-  games Game[]
+  group               Group                @relation(fields: [groupId], references: [id])
+  games               Game[]
+  additionalBetEvents AdditionalBetEvent[]
+}
+
+model AdditionalBetEvent {
+  id           String          @id @default(cuid())
+  tournamentId String
+  name         String
+  deadline     DateTime
+  points       Int
+  answer       String?
+  createdAt    DateTime        @default(now())
+
+  tournament Tournament      @relation(fields: [tournamentId], references: [id])
+  bets       AdditionalBet[]
+}
+
+model AdditionalBet {
+  id        String   @id @default(cuid())
+  eventId   String
+  userId    String
+  answer    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event AdditionalBetEvent @relation(fields: [eventId], references: [id])
+  user  User               @relation(fields: [userId], references: [id])
+
+  @@unique([eventId, userId])
 }
 
 model Game {

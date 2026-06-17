@@ -32,6 +32,7 @@ describe("aggregateLeaderboardEntries", () => {
                 name: "Alice",
                 exactScoreBets: 0,
                 correctOutcomeBets: 0,
+                additionalBetPoints: 0,
                 totalPoints: 0,
             },
             {
@@ -39,6 +40,7 @@ describe("aggregateLeaderboardEntries", () => {
                 name: "Bob",
                 exactScoreBets: 0,
                 correctOutcomeBets: 0,
+                additionalBetPoints: 0,
                 totalPoints: 0,
             },
         ]);
@@ -65,6 +67,7 @@ describe("aggregateLeaderboardEntries", () => {
                 name: "Alice",
                 exactScoreBets: 2,
                 correctOutcomeBets: 1,
+                additionalBetPoints: 0,
                 totalPoints: 7,
             },
             {
@@ -72,6 +75,7 @@ describe("aggregateLeaderboardEntries", () => {
                 name: "Bob",
                 exactScoreBets: 0,
                 correctOutcomeBets: 1,
+                additionalBetPoints: 0,
                 totalPoints: 1,
             },
         ]);
@@ -90,6 +94,43 @@ describe("aggregateLeaderboardEntries", () => {
         });
 
         expect(rows[0].totalPoints).toBe(7);
+    });
+
+    it("includes additional bet points in totalPoints", () => {
+        const members = [
+            { userId: "u1", name: "Alice" },
+            { userId: "u2", name: "Bob" },
+        ];
+        const additionalBetPointsByUser = new Map([
+            ["u1", 5],
+            ["u2", 0],
+        ]);
+
+        const rows = aggregateLeaderboardEntries(
+            members,
+            [],
+            scoring,
+            additionalBetPointsByUser,
+        );
+
+        expect(rows).toEqual([
+            {
+                userId: "u1",
+                name: "Alice",
+                exactScoreBets: 0,
+                correctOutcomeBets: 0,
+                additionalBetPoints: 5,
+                totalPoints: 5,
+            },
+            {
+                userId: "u2",
+                name: "Bob",
+                exactScoreBets: 0,
+                correctOutcomeBets: 0,
+                additionalBetPoints: 0,
+                totalPoints: 0,
+            },
+        ]);
     });
 
     it("sorts by totalPoints DESC then exactScoreBets DESC", () => {
@@ -132,6 +173,7 @@ describe("assignStandardRanks", () => {
                 name: "Alice",
                 exactScoreBets: 2,
                 correctOutcomeBets: 0,
+                additionalBetPoints: 0,
                 totalPoints: 6,
             },
             {
@@ -139,6 +181,7 @@ describe("assignStandardRanks", () => {
                 name: "Bob",
                 exactScoreBets: 1,
                 correctOutcomeBets: 1,
+                additionalBetPoints: 0,
                 totalPoints: 4,
             },
             {
@@ -146,6 +189,7 @@ describe("assignStandardRanks", () => {
                 name: "Carol",
                 exactScoreBets: 1,
                 correctOutcomeBets: 1,
+                additionalBetPoints: 0,
                 totalPoints: 4,
             },
             {
@@ -153,6 +197,7 @@ describe("assignStandardRanks", () => {
                 name: "Dave",
                 exactScoreBets: 0,
                 correctOutcomeBets: 1,
+                additionalBetPoints: 0,
                 totalPoints: 1,
             },
         ];
@@ -199,6 +244,7 @@ describe("getTournamentLeaderboard", () => {
             makeBet({ userId: "u1", betResult: BetResult.EXACT_SCORE }),
             makeBet({ userId: "u2", betResult: BetResult.CORRECT_OUTCOME }),
         ]);
+        prisma.additionalBetEvent.findMany.mockResolvedValue([]);
 
         const result = await getTournamentLeaderboard("t1");
 
@@ -209,6 +255,7 @@ describe("getTournamentLeaderboard", () => {
                 name: "Alice",
                 exactScoreBets: 1,
                 correctOutcomeBets: 0,
+                additionalBetPoints: 0,
                 totalPoints: 3,
             },
             {
@@ -217,7 +264,67 @@ describe("getTournamentLeaderboard", () => {
                 name: "Bob",
                 exactScoreBets: 0,
                 correctOutcomeBets: 1,
+                additionalBetPoints: 0,
                 totalPoints: 1,
+            },
+        ]);
+    });
+
+    it("includes additional bet points in leaderboard totals", async () => {
+        prisma.tournament.findUnique.mockResolvedValue(
+            makeTournament({
+                id: "t1",
+                groupId: "g1",
+                exactScorePoints: 3,
+                correctOutcomePoints: 1,
+            }),
+        );
+        prisma.groupMember.findMany.mockResolvedValue([
+            {
+                ...makeGroupMember({ userId: "u1", groupId: "g1" }),
+                user: makeUser({ id: "u1", name: "Alice" }),
+            },
+            {
+                ...makeGroupMember({ userId: "u2", groupId: "g1" }),
+                user: makeUser({ id: "u2", name: "Bob" }),
+            },
+        ] as unknown as (GroupMember & { user: User })[]);
+        prisma.bet.findMany.mockResolvedValue([]);
+        prisma.additionalBetEvent.findMany.mockResolvedValue([
+            {
+                id: "abe_1",
+                points: 5,
+                answer: "Poland",
+                bets: [
+                    {
+                        eventId: "abe_1",
+                        userId: "u1",
+                        answer: "poland",
+                    },
+                ],
+            },
+        ] as never);
+
+        const result = await getTournamentLeaderboard("t1");
+
+        expect(result).toEqual([
+            {
+                rank: 1,
+                userId: "u1",
+                name: "Alice",
+                exactScoreBets: 0,
+                correctOutcomeBets: 0,
+                additionalBetPoints: 5,
+                totalPoints: 5,
+            },
+            {
+                rank: 2,
+                userId: "u2",
+                name: "Bob",
+                exactScoreBets: 0,
+                correctOutcomeBets: 0,
+                additionalBetPoints: 0,
+                totalPoints: 0,
             },
         ]);
     });
