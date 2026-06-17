@@ -1,4 +1,6 @@
 interface CacheTags {
+    "additional-bet-events": { tournamentId: string };
+    "additional-bet-events-user": { tournamentId: string; userId: string };
     "game-bets": { gameId: string };
     leaderboard: { tournamentId: string };
     "tournament-games": { tournamentId: string };

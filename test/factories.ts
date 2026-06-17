@@ -1,4 +1,6 @@
 import type {
+    AdditionalBet,
+    AdditionalBetEvent,
     Bet,
     Game,
     Group,
@@ -87,6 +89,37 @@ export function makeBet(overrides: Partial<Bet> = {}): Bet {
         homeScore: 1,
         awayScore: 1,
         betResult: null,
+        createdAt: now,
+        updatedAt: now,
+        ...overrides,
+    };
+}
+
+export function makeAdditionalBetEvent(
+    overrides: Partial<AdditionalBetEvent> = {},
+): AdditionalBetEvent {
+    const now = new Date();
+    return {
+        id: "abe_test_1",
+        tournamentId: "tournament_test_1",
+        name: "Who will win?",
+        deadline: new Date(now.getTime() + 86_400_000),
+        points: 5,
+        answer: null,
+        createdAt: now,
+        ...overrides,
+    };
+}
+
+export function makeAdditionalBet(
+    overrides: Partial<AdditionalBet> = {},
+): AdditionalBet {
+    const now = new Date();
+    return {
+        id: "ab_test_1",
+        eventId: "abe_test_1",
+        userId: "user_test_1",
+        answer: "Poland",
         createdAt: now,
         updatedAt: now,
         ...overrides,

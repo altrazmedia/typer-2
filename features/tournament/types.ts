@@ -17,5 +17,24 @@ export interface LeaderboardEntry {
     name: string;
     exactScoreBets: number;
     correctOutcomeBets: number;
+    additionalBetPoints: number;
     totalPoints: number;
+}
+
+export interface AdditionalBetEventUserBet {
+    userId: string;
+    name: string;
+    answer: string;
+}
+
+export interface AdditionalBetEventItem {
+    id: string;
+    tournamentId: string;
+    name: string;
+    deadline: Date;
+    points: number;
+    answer: string | null;
+    createdAt: Date;
+    currentUserBet: string | null;
+    otherUsersBets: AdditionalBetEventUserBet[];
 }
