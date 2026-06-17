@@ -6,17 +6,11 @@ import { FinishedGameBetsSection } from "@/features/game/components/finished-gam
 import { EditGameDialog } from "@/features/game/components/edit-game-dialog";
 import { EditScoreDialog } from "@/features/game/components/edit-score-dialog";
 import { KickoffDate } from "@/features/game/components/kickoff-date";
-import { buildGameBetRows } from "@/features/game/helpers/build-game-bet-rows";
-import type {
-    GameBetRow,
-    GameRow,
-    GroupMemberRow,
-} from "@/features/game/types";
+import type { GameRow, GroupMemberRow } from "@/features/game/types";
 
 interface Props {
     game: GameRow;
     groupMembers: GroupMemberRow[];
-    gameBets: GameBetRow[];
     currentUserId: string;
     isAdmin: boolean;
 }
@@ -24,12 +18,9 @@ interface Props {
 export const FinishedGameCard: FC<Props> = ({
     game,
     groupMembers,
-    gameBets,
     currentUserId,
     isAdmin,
 }) => {
-    const betRows = buildGameBetRows(groupMembers, gameBets, currentUserId);
-
     return (
         <Card>
             <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 space-y-0">
@@ -46,7 +37,11 @@ export const FinishedGameCard: FC<Props> = ({
                     </CardTitle>
                 </div>
             </CardHeader>
-            <FinishedGameBetsSection rows={betRows} />
+            <FinishedGameBetsSection
+                gameId={game.id}
+                groupMembers={groupMembers}
+                currentUserId={currentUserId}
+            />
             {isAdmin ? (
                 <CardFooter className="flex flex-row gap-2">
                     <EditGameDialog
@@ -64,6 +59,20 @@ export const FinishedGameCard: FC<Props> = ({
                     />
                 </CardFooter>
             ) : null}
+        </Card>
+    );
+};
+
+export const FinishedGameCardLoading: FC = () => {
+    return (
+        <Card>
+            <CardHeader className="flex flex-col items-center justify-between gap-5 space-y-0">
+                <div className="flex min-w-0 flex-1 flex-col items-center gap-3">
+                    <div className="h-4 w-24 animate-pulse rounded-lg bg-muted" />
+                    <div className="h-7 w-36 animate-pulse rounded-lg bg-muted" />
+                </div>
+                <div className="h-4 w-24 animate-pulse rounded-lg bg-muted" />
+            </CardHeader>
         </Card>
     );
 };

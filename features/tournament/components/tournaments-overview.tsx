@@ -1,8 +1,8 @@
+import { cacheLife, cacheTag } from "next/cache";
 import type { FC } from "react";
 
 import { Separator } from "@/components/ui/separator";
-
-import { getAuthInApp } from "@/lib/auth/get-auth-in-app";
+import { getCacheTag } from "@/lib/cache-tags";
 
 import { CreateTournamentDialog } from "@/features/tournament/components/create-tournament-dialog";
 import {
@@ -31,9 +31,27 @@ export const TournamentsOverviewLoading: FC = () => (
     </div>
 );
 
-export const TournamentsOverview: FC = async () => {
-    const session = await getAuthInApp();
-    const sections = await listTournamentsForUser(session.user.id);
+interface TournamentsOverviewProps {
+    userId: string;
+}
+
+export async function TournamentsOverview({
+    userId,
+}: TournamentsOverviewProps) {
+    "use cache";
+    cacheLife("hours");
+
+    const sections = await listTournamentsForUser(userId);
+
+    if (sections.length > 0) {
+        cacheTag(
+            ...sections.map((section) =>
+                getCacheTag("tournaments-for-group", {
+                    groupId: section.groupId,
+                }),
+            ),
+        );
+    }
 
     if (sections.length === 0) {
         return (
@@ -80,4 +98,4 @@ export const TournamentsOverview: FC = async () => {
             ))}
         </div>
     );
-};
+}

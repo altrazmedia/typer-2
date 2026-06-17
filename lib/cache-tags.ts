@@ -1,5 +1,10 @@
 interface CacheTags {
+    "game-bets": { gameId: string };
     leaderboard: { tournamentId: string };
+    "tournament-games": { tournamentId: string };
+    "tournament-user-games": { tournamentId: string; userId: string };
+    "tournament-membership": { tournamentId: string; userId: string };
+    "tournament-meta": { tournamentId: string };
     "tournaments-for-group": { groupId: string };
 }
 

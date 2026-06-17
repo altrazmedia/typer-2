@@ -1,6 +1,8 @@
+import { revalidateTag } from "next/cache";
 import { describe, expect, it } from "vitest";
 
 import { createGame } from "@/features/game/server/create-game";
+import { getCacheTag } from "@/lib/cache-tags";
 import { makeGame } from "@/test/factories";
 import { prisma } from "@/test/prisma";
 
@@ -32,6 +34,12 @@ describe("createGame", () => {
                 kickoffAt: kickoffAtDate,
             },
         });
+        expect(revalidateTag).toHaveBeenCalledWith(
+            getCacheTag("tournament-games", {
+                tournamentId: created.tournamentId,
+            }),
+            "max",
+        );
     });
 
     it("throws when tournamentId is empty", async () => {

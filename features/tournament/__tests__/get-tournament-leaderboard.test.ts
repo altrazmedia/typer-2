@@ -1,6 +1,6 @@
 import type { GroupMember, User } from "@prisma/client";
 import { BetResult } from "@prisma/client";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import {
     aggregateLeaderboardEntries,

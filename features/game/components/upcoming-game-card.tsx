@@ -53,3 +53,18 @@ export const UpcomingGameCard: FC<Props> = ({ game, userBet, isAdmin }) => {
         </Card>
     );
 };
+
+export const UpcomingGameCardLoading: FC = () => {
+    return (
+        <Card>
+            <div className="flex min-w-0 flex-1 flex-col items-center gap-3">
+                <div className="h-4 w-24 animate-pulse rounded-lg bg-muted" />
+                <div className="flex flex-row items-center justify-center gap-2">
+                    <div className="h-7 w-36 animate-pulse rounded-lg bg-muted" />
+
+                    <div className="h-7 w-36 animate-pulse rounded-lg bg-muted" />
+                </div>
+            </div>
+        </Card>
+    );
+};

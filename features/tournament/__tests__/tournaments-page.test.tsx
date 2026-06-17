@@ -1,19 +1,17 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { TournamentsOverview } from "@/features/tournament/components/tournaments-overview";
-import { listTournamentsForUser } from "@/features/tournament/server/list-tournaments-for-user";
+import { TournamentsPage } from "@/features/tournament/pages/tournaments-page";
 import { mockAuthedUser, mockUnauthed } from "@/test/auth";
 
-vi.mock("@/features/tournament/server/list-tournaments-for-user", () => ({
-    listTournamentsForUser: vi.fn(),
+vi.mock("@/features/tournament/components/tournaments-overview", () => ({
+    TournamentsOverview: ({ userId }: { userId: string }) => (
+        <div data-testid="tournaments-overview" data-user-id={userId} />
+    ),
+    TournamentsOverviewLoading: () => null,
 }));
 
-vi.mock("@/features/tournament/components/create-tournament-dialog", () => ({
-    CreateTournamentDialog: () => null,
-}));
-
-describe("TournamentsOverview", () => {
+describe("TournamentsPage", () => {
     it("redirects to login when the user is not authenticated", async () => {
         const { redirect } = await import("next/navigation");
         mockUnauthed();
@@ -21,31 +19,20 @@ describe("TournamentsOverview", () => {
             throw new Error("redirect");
         });
 
-        await expect(TournamentsOverview({})).rejects.toThrow("redirect");
+        await expect(TournamentsPage()).rejects.toThrow("redirect");
 
         expect(redirect).toHaveBeenCalledWith("/login");
     });
 
-    it("renders tournament sections for authenticated user", async () => {
+    it("renders the page header and passes userId to the overview", async () => {
         mockAuthedUser({ id: "user_1" });
-        vi.mocked(listTournamentsForUser).mockResolvedValue([
-            {
-                groupId: "group_1",
-                groupName: "Grupa testowa",
-                isAdmin: false,
-                tournaments: [
-                    {
-                        id: "t1",
-                        name: "Liga 2026",
-                        season: "2025/26",
-                    },
-                ],
-            },
-        ]);
 
-        render(await TournamentsOverview({}));
+        render(await TournamentsPage());
 
-        expect(screen.getByText("Liga 2026")).toBeInTheDocument();
-        expect(screen.getByText("Grupa testowa")).toBeInTheDocument();
+        expect(screen.getByText("Turnieje")).toBeInTheDocument();
+        expect(screen.getByTestId("tournaments-overview")).toHaveAttribute(
+            "data-user-id",
+            "user_1",
+        );
     });
 });

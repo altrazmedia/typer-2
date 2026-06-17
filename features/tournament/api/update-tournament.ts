@@ -87,6 +87,7 @@ export async function updateTournament(
         }),
         "max",
     );
+    revalidateTag(getCacheTag("tournament-meta", { tournamentId }), "max");
 
     return NextResponse.json({ tournament });
 }

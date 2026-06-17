@@ -1,6 +1,8 @@
+import { revalidateTag } from "next/cache";
 import { describe, expect, it } from "vitest";
 
 import { updateGame } from "@/features/game/server/update-game";
+import { getCacheTag } from "@/lib/cache-tags";
 import { makeGame } from "@/test/factories";
 import { prisma } from "@/test/prisma";
 
@@ -22,6 +24,12 @@ describe("updateGame", () => {
             where: { id: "game_test_1" },
             data: { homeTeam: "Updated Home" },
         });
+        expect(revalidateTag).toHaveBeenCalledWith(
+            getCacheTag("tournament-games", {
+                tournamentId: updated.tournamentId,
+            }),
+            "max",
+        );
     });
 
     it("throws when no fields are provided", async () => {

@@ -25,11 +25,13 @@ export async function listTournamentsForUser(
         orderBy: { joinedAt: "asc" },
     });
 
-    for (const membership of memberships) {
+    if (memberships.length > 0) {
         cacheTag(
-            getCacheTag("tournaments-for-group", {
-                groupId: membership.groupId,
-            }),
+            ...memberships.map((membership) =>
+                getCacheTag("tournaments-for-group", {
+                    groupId: membership.groupId,
+                }),
+            ),
         );
     }
 

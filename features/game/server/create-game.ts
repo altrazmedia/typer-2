@@ -1,7 +1,9 @@
 import "server-only";
 
 import type { Game } from "@prisma/client";
+import { revalidateTag } from "next/cache";
 
+import { getCacheTag } from "@/lib/cache-tags";
 import { prisma } from "@/lib/db";
 
 import { parseKickoffAtUtc } from "@/features/game/helpers/parse-kickoff-at-utc";
@@ -26,7 +28,7 @@ function validateArgs(args: CreateGameArgs): void {
 export async function createGame(args: CreateGameArgs): Promise<Game> {
     validateArgs(args);
 
-    return prisma.game.create({
+    const game = await prisma.game.create({
         data: {
             tournamentId: args.tournamentId.trim(),
             homeTeam: args.homeTeam.trim(),
@@ -34,4 +36,13 @@ export async function createGame(args: CreateGameArgs): Promise<Game> {
             kickoffAt: parseKickoffAtUtc(args.kickoffAt),
         },
     });
+
+    revalidateTag(
+        getCacheTag("tournament-games", {
+            tournamentId: game.tournamentId,
+        }),
+        "max",
+    );
+
+    return game;
 }
