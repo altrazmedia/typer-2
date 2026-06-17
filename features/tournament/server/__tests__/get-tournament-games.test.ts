@@ -88,8 +88,6 @@ describe("getTournamentGames", () => {
             getCacheTag("tournament-games", {
                 tournamentId: "tournament_test_1",
             }),
-        );
-        expect(cacheTag).toHaveBeenCalledWith(
             getCacheTag("tournament-user-games", {
                 tournamentId: "tournament_test_1",
                 userId: "user_1",
