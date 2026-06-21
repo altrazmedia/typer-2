@@ -5,7 +5,7 @@ import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { FinishedGameBetsSection } from "@/features/game/components/finished-game-bets-section";
 import { EditGameDialog } from "@/features/game/components/edit-game-dialog";
 import { EditScoreDialog } from "@/features/game/components/edit-score-dialog";
-import { KickoffDate } from "@/features/game/components/kickoff-date";
+import { EventDate } from "@/components/event-date";
 import type { GameRow, GroupMemberRow } from "@/features/game/types";
 
 interface Props {
@@ -26,7 +26,7 @@ export const FinishedGameCard: FC<Props> = ({
             <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 space-y-0">
                 <div className="flex min-w-0 flex-1 flex-col items-center gap-3">
                     <p className="text-xs text-muted-foreground">
-                        <KickoffDate date={game.kickoffAt} />
+                        <EventDate date={game.kickoffAt} />
                     </p>
                     <CardTitle className="text-sm font-bold sm:text-lg">
                         {game.homeTeam}{" "}

@@ -4,19 +4,19 @@ import dayjs from "dayjs";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 
-function formatKickoff(d: Date): string {
-    return dayjs(d).format("DD.MM.YYYY - HH:mm");
+function formatEventDate(date: Date): string {
+    return dayjs(date).format("DD.MM.YYYY • HH:mm");
 }
 
 interface Props {
     date: Date;
 }
 
-export const KickoffDate: FC<Props> = ({ date }) => {
+export const EventDate: FC<Props> = ({ date }) => {
     const [label, setLabel] = useState<string | null>(null);
 
     useEffect(() => {
-        setLabel(formatKickoff(date));
+        setLabel(formatEventDate(date));
     }, [date]);
 
     return (
