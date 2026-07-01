@@ -25,6 +25,9 @@ function LeaderboardTableHeader() {
                     Poprawne rezultaty
                 </TableHead>
                 <TableHead className="text-right text-muted-foreground">
+                    Dodatkowe zakłady
+                </TableHead>
+                <TableHead className="text-right text-muted-foreground">
                     Punkty
                 </TableHead>
             </TableRow>
@@ -59,6 +62,9 @@ export const LeaderboardTable: FC<Props> = ({
                                 {entry.correctOutcomeBets}
                             </TableCell>
                             <TableCell className="text-right">
+                                {entry.additionalBetPoints}
+                            </TableCell>
+                            <TableCell className="text-right">
                                 {entry.totalPoints}
                             </TableCell>
                         </TableRow>
@@ -86,6 +92,9 @@ export const LeaderboardTableLoading: FC = () => {
                         </TableCell>
                         <TableCell>
                             <div className="h-4 w-32 animate-pulse rounded bg-muted" />
+                        </TableCell>
+                        <TableCell className="text-right">
+                            <div className="ml-auto h-4 w-8 animate-pulse rounded bg-muted" />
                         </TableCell>
                         <TableCell className="text-right">
                             <div className="ml-auto h-4 w-8 animate-pulse rounded bg-muted" />

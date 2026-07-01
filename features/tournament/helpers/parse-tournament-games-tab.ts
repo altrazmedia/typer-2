@@ -1,4 +1,8 @@
-export type TournamentGamesTab = "finished" | "leaderboard" | "upcoming";
+export type TournamentGamesTab =
+    | "additional-bets"
+    | "finished"
+    | "leaderboard"
+    | "upcoming";
 
 function firstString(value: string | string[] | undefined): string | undefined {
     if (value === undefined) return undefined;
@@ -10,6 +14,7 @@ export function parseTournamentGamesTab(
 ): TournamentGamesTab {
     const v = firstString(tab);
     if (v === "finished") return "finished";
+    if (v === "additional-bets") return "additional-bets";
     if (v === "leaderboard") return "leaderboard";
     return "upcoming";
 }
