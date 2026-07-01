@@ -35,6 +35,16 @@ vi.mock(
 );
 
 vi.mock(
+    "@/features/tournament/components/tournament-additional-bets-section",
+    () => ({
+        TournamentAdditionalBetsSection: () => (
+            <div data-testid="tournament-additional-bets-section" />
+        ),
+        TournamentAdditionalBetsSectionLoading: () => null,
+    }),
+);
+
+vi.mock(
     "@/features/tournament/components/tournament-leaderboard-section",
     () => ({
         TournamentLeaderboardSection: () => (
@@ -141,6 +151,7 @@ describe("TournamentDetailsPage", () => {
         );
         expect(screen.getByText("Nadchodzące mecze")).toBeInTheDocument();
         expect(screen.getByText("Zakończone mecze")).toBeInTheDocument();
+        expect(screen.getByText("Dodatkowe zakłady")).toBeInTheDocument();
         expect(screen.getByText("Tabela")).toBeInTheDocument();
         expect(
             screen.getByTestId("tournament-upcoming-games-section"),
@@ -169,6 +180,34 @@ describe("TournamentDetailsPage", () => {
         ).not.toBeInTheDocument();
         expect(
             screen.queryByTestId("tournament-finished-games-section"),
+        ).not.toBeInTheDocument();
+    });
+
+    it("renders additional bets section when ?tab=additional-bets", async () => {
+        mockAuthedUser({ id: "user_1" });
+
+        render(
+            await TournamentDetailsPage({
+                params: Promise.resolve({ id: "t1" }),
+                searchParams: Promise.resolve({ tab: "additional-bets" }),
+            }),
+        );
+
+        expect(screen.getByTestId("tab-navigation")).toHaveAttribute(
+            "data-active-tab",
+            "additional-bets",
+        );
+        expect(
+            screen.getByTestId("tournament-additional-bets-section"),
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByTestId("tournament-upcoming-games-section"),
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByTestId("tournament-finished-games-section"),
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByTestId("tournament-leaderboard-section"),
         ).not.toBeInTheDocument();
     });
 

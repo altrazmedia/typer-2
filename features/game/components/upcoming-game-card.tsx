@@ -5,7 +5,7 @@ import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { BetForm } from "@/features/bet/components/bet-form";
 import type { BetRow } from "@/features/bet/types";
 import { EditGameDialog } from "@/features/game/components/edit-game-dialog";
-import { KickoffDate } from "@/features/game/components/kickoff-date";
+import { EventDate } from "@/components/event-date";
 import type { GameRow } from "@/features/game/types";
 
 interface Props {
@@ -20,7 +20,7 @@ export const UpcomingGameCard: FC<Props> = ({ game, userBet, isAdmin }) => {
             <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 space-y-0">
                 <div className="flex min-w-0 flex-1 flex-col items-center gap-3">
                     <p className="text-xs text-muted-foreground">
-                        <KickoffDate date={game.kickoffAt} />
+                        <EventDate date={game.kickoffAt} />
                     </p>
                     <CardTitle className="block w-full font-semibold tracking-normal">
                         <div className="flex w-full items-center justify-center gap-2 text-sm leading-snug font-bold tracking-normal sm:text-lg">

@@ -5,6 +5,10 @@ import { TabNavigation } from "@/components/ui/tab-navigation";
 import { getAuthInApp } from "@/lib/auth/get-auth-in-app";
 
 import {
+    TournamentAdditionalBetsSection,
+    TournamentAdditionalBetsSectionLoading,
+} from "@/features/tournament/components/tournament-additional-bets-section";
+import {
     TournamentFinishedGamesSection,
     TournamentFinishedGamesSectionLoading,
 } from "@/features/tournament/components/tournament-finished-games-section";
@@ -60,6 +64,10 @@ export async function TournamentDetailsPage({
                     tabs={[
                         { label: "Nadchodzące mecze", value: "upcoming" },
                         { label: "Zakończone mecze", value: "finished" },
+                        {
+                            label: "Dodatkowe zakłady",
+                            value: "additional-bets",
+                        },
                         { label: "Tabela", value: "leaderboard" },
                     ]}
                 />
@@ -88,6 +96,17 @@ export async function TournamentDetailsPage({
                         fallback={<TournamentFinishedGamesSectionLoading />}
                     >
                         <TournamentFinishedGamesSection
+                            currentUserId={session.user.id}
+                            isAdmin={membership.isAdmin}
+                            tournamentId={tournamentId}
+                        />
+                    </Suspense>
+                )}
+                {activeTab === "additional-bets" && (
+                    <Suspense
+                        fallback={<TournamentAdditionalBetsSectionLoading />}
+                    >
+                        <TournamentAdditionalBetsSection
                             currentUserId={session.user.id}
                             isAdmin={membership.isAdmin}
                             tournamentId={tournamentId}
