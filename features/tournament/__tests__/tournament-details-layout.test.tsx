@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import TournamentDetailsLayout from "@/app/(app)/tournaments/[id]/layout";
+import { TournamentDetailsLayout } from "@/features/tournament/layout/tournament-details-layout";
 import { getTournamentMembership } from "@/features/tournament/server/get-tournament-membership";
 import { mockAuthedUser, mockUnauthed } from "@/test/auth";
 
