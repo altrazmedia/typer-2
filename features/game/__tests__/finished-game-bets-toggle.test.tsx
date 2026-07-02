@@ -1,10 +1,15 @@
 import { BetResult } from "@prisma/client";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { FinishedGameBetsToggle } from "@/features/game/components/finished-game-bets-toggle";
 import type { GameBetTableRow } from "@/features/game/types";
+import { fireConfetti } from "@/lib/confetti";
+
+vi.mock("@/lib/confetti", () => ({
+    fireConfetti: vi.fn(),
+}));
 
 const rows: GameBetTableRow[] = [
     {
@@ -76,6 +81,10 @@ async function expandSection() {
 }
 
 describe("FinishedGameBetsToggle", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
     it("is collapsed by default and shows the expand label", () => {
         render(<FinishedGameBetsToggle rows={rows} />);
 
@@ -124,5 +133,65 @@ describe("FinishedGameBetsToggle", () => {
         const indicators = screen.getAllByRole("img");
         expect(indicators).toHaveLength(4);
         expect(screen.queryByText("Piotr Wiśniewski")).toBeInTheDocument();
+    });
+
+    it("fires confetti when expanding with an exact score result", async () => {
+        const user = userEvent.setup();
+        render(<FinishedGameBetsToggle rows={resultRows} />);
+
+        await user.click(screen.getByRole("button", { name: "Pokaż typy" }));
+
+        expect(fireConfetti).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not fire confetti when collapsing and re-expanding", async () => {
+        const user = userEvent.setup();
+        render(<FinishedGameBetsToggle rows={resultRows} />);
+
+        await user.click(screen.getByRole("button", { name: "Pokaż typy" }));
+        await user.click(screen.getByRole("button", { name: "Ukryj typy" }));
+        await user.click(screen.getByRole("button", { name: "Pokaż typy" }));
+
+        expect(fireConfetti).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not fire confetti for a correct outcome result", async () => {
+        const user = userEvent.setup();
+        const correctOutcomeRows: GameBetTableRow[] = [
+            {
+                userId: "u1",
+                name: "Jan Kowalski",
+                isCurrentUser: true,
+                homeScore: 1,
+                awayScore: 1,
+                betResult: BetResult.CORRECT_OUTCOME,
+            },
+        ];
+
+        render(<FinishedGameBetsToggle rows={correctOutcomeRows} />);
+
+        await user.click(screen.getByRole("button", { name: "Pokaż typy" }));
+
+        expect(fireConfetti).not.toHaveBeenCalled();
+    });
+
+    it("does not fire confetti for an incorrect result", async () => {
+        const user = userEvent.setup();
+        const incorrectRows: GameBetTableRow[] = [
+            {
+                userId: "u1",
+                name: "Jan Kowalski",
+                isCurrentUser: true,
+                homeScore: 0,
+                awayScore: 2,
+                betResult: BetResult.INCORRECT,
+            },
+        ];
+
+        render(<FinishedGameBetsToggle rows={incorrectRows} />);
+
+        await user.click(screen.getByRole("button", { name: "Pokaż typy" }));
+
+        expect(fireConfetti).not.toHaveBeenCalled();
     });
 });
