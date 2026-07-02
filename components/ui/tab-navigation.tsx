@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import type { FC } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -21,24 +22,27 @@ export const TabNavigation: FC<Props> = ({
     activeTab,
     searchParamKey = "tab",
 }) => {
-    const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    const handleValueChange = (value: string) => {
+    const buildHref = (tabValue: string): string => {
         const params = new URLSearchParams(searchParams.toString());
-        params.set(searchParamKey, value);
+        params.set(searchParamKey, tabValue);
         const query = params.toString();
-        router.push(query ? `${pathname}?${query}` : pathname, {
-            scroll: false,
-        });
+        return query ? `${pathname}?${query}` : pathname;
     };
 
     return (
-        <Tabs value={activeTab} onValueChange={handleValueChange}>
+        <Tabs value={activeTab}>
             <TabsList variant="line">
                 {tabs.map((tab) => (
-                    <TabsTrigger key={tab.value} value={tab.value}>
+                    <TabsTrigger
+                        key={tab.value}
+                        value={tab.value}
+                        render={
+                            <Link href={buildHref(tab.value)} scroll={false} />
+                        }
+                    >
                         {tab.label}
                     </TabsTrigger>
                 ))}

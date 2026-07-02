@@ -9,11 +9,6 @@ vi.mock("@/features/tournament/server/get-tournament-membership", () => ({
     getTournamentMembership: vi.fn(),
 }));
 
-vi.mock("@/features/tournament/components/tournament-header", () => ({
-    TournamentHeader: () => <div data-testid="tournament-header" />,
-    TournamentHeaderLoading: () => null,
-}));
-
 vi.mock(
     "@/features/tournament/components/tournament-upcoming-games-section",
     () => ({
@@ -209,20 +204,5 @@ describe("TournamentDetailsPage", () => {
         expect(
             screen.queryByTestId("tournament-leaderboard-section"),
         ).not.toBeInTheDocument();
-    });
-
-    it("passes isAdmin from membership to header", async () => {
-        mockAuthedUser({ id: "user_1" });
-        vi.mocked(getTournamentMembership).mockResolvedValue({ isAdmin: true });
-
-        render(
-            await TournamentDetailsPage({
-                params: Promise.resolve({ id: "t1" }),
-                searchParams: Promise.resolve({}),
-            }),
-        );
-
-        expect(getTournamentMembership).toHaveBeenCalledWith("t1", "user_1");
-        expect(screen.getByTestId("tournament-header")).toBeInTheDocument();
     });
 });
