@@ -34,7 +34,7 @@ export const TabNavigation: FC<Props> = ({
 
     return (
         <Tabs value={activeTab}>
-            <TabsList variant="line">
+            <TabsList variant="line" className="max-w-full overflow-x-auto">
                 {tabs.map((tab) => (
                     <TabsTrigger
                         key={tab.value}
