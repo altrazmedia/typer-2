@@ -17,10 +17,6 @@ import {
     TournamentUpcomingGamesSectionLoading,
 } from "@/features/tournament/components/tournament-upcoming-games-section";
 import {
-    TournamentHeader,
-    TournamentHeaderLoading,
-} from "@/features/tournament/components/tournament-header";
-import {
     TournamentLeaderboardSection,
     TournamentLeaderboardSectionLoading,
 } from "@/features/tournament/components/tournament-leaderboard-section";
@@ -50,70 +46,51 @@ export async function TournamentDetailsPage({
     }
 
     return (
-        <div className="flex flex-col gap-8">
-            <Suspense fallback={<TournamentHeaderLoading />}>
-                <TournamentHeader
-                    isAdmin={membership.isAdmin}
-                    tournamentId={tournamentId}
-                />
-            </Suspense>
-
-            <div className="flex flex-col gap-4">
-                <TabNavigation
-                    activeTab={activeTab}
-                    tabs={[
-                        { label: "Nadchodzące mecze", value: "upcoming" },
-                        { label: "Zakończone mecze", value: "finished" },
-                        {
-                            label: "Dodatkowe zakłady",
-                            value: "additional-bets",
-                        },
-                        { label: "Tabela", value: "leaderboard" },
-                    ]}
-                />
-                {activeTab === "leaderboard" && (
-                    <Suspense
-                        fallback={<TournamentLeaderboardSectionLoading />}
-                    >
-                        <TournamentLeaderboardSection
-                            tournamentId={tournamentId}
-                        />
-                    </Suspense>
-                )}
-                {activeTab === "upcoming" && (
-                    <Suspense
-                        fallback={<TournamentUpcomingGamesSectionLoading />}
-                    >
-                        <TournamentUpcomingGamesSection
-                            currentUserId={session.user.id}
-                            isAdmin={membership.isAdmin}
-                            tournamentId={tournamentId}
-                        />
-                    </Suspense>
-                )}
-                {activeTab === "finished" && (
-                    <Suspense
-                        fallback={<TournamentFinishedGamesSectionLoading />}
-                    >
-                        <TournamentFinishedGamesSection
-                            currentUserId={session.user.id}
-                            isAdmin={membership.isAdmin}
-                            tournamentId={tournamentId}
-                        />
-                    </Suspense>
-                )}
-                {activeTab === "additional-bets" && (
-                    <Suspense
-                        fallback={<TournamentAdditionalBetsSectionLoading />}
-                    >
-                        <TournamentAdditionalBetsSection
-                            currentUserId={session.user.id}
-                            isAdmin={membership.isAdmin}
-                            tournamentId={tournamentId}
-                        />
-                    </Suspense>
-                )}
-            </div>
+        <div className="flex flex-col gap-4">
+            <TabNavigation
+                activeTab={activeTab}
+                tabs={[
+                    { label: "Nadchodzące mecze", value: "upcoming" },
+                    { label: "Zakończone mecze", value: "finished" },
+                    {
+                        label: "Dodatkowe zakłady",
+                        value: "additional-bets",
+                    },
+                    { label: "Tabela", value: "leaderboard" },
+                ]}
+            />
+            {activeTab === "leaderboard" && (
+                <Suspense fallback={<TournamentLeaderboardSectionLoading />}>
+                    <TournamentLeaderboardSection tournamentId={tournamentId} />
+                </Suspense>
+            )}
+            {activeTab === "upcoming" && (
+                <Suspense fallback={<TournamentUpcomingGamesSectionLoading />}>
+                    <TournamentUpcomingGamesSection
+                        currentUserId={session.user.id}
+                        isAdmin={membership.isAdmin}
+                        tournamentId={tournamentId}
+                    />
+                </Suspense>
+            )}
+            {activeTab === "finished" && (
+                <Suspense fallback={<TournamentFinishedGamesSectionLoading />}>
+                    <TournamentFinishedGamesSection
+                        currentUserId={session.user.id}
+                        isAdmin={membership.isAdmin}
+                        tournamentId={tournamentId}
+                    />
+                </Suspense>
+            )}
+            {activeTab === "additional-bets" && (
+                <Suspense fallback={<TournamentAdditionalBetsSectionLoading />}>
+                    <TournamentAdditionalBetsSection
+                        currentUserId={session.user.id}
+                        isAdmin={membership.isAdmin}
+                        tournamentId={tournamentId}
+                    />
+                </Suspense>
+            )}
         </div>
     );
 }
